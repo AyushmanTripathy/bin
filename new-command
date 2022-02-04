@@ -1,0 +1,13 @@
+#!/bin/sh
+
+echo 'name of command'
+read name
+
+cd ~/bin
+echo '#!/bin/sh' >> $name
+chmod +x $name
+nvim $name
+
+git add .
+git commit -m "new command $name"
+git push -u origin master

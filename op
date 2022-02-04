@@ -1,0 +1,51 @@
+#!/bin/sh
+
+open(){
+
+  if [[ $2 == "-v" ]]; then
+    vim $1
+
+  elif  [[ $2 == '-c' ]]; then
+    cat $1
+
+  elif  [[ $1 == *".mp"* ]]; then
+    mocp -S
+    mocp -a $1  -p -t r -v 90
+
+  elif  [[ $1 == *".m3u" ]]; then
+    mocp -S
+    mocp -a $1 -p -t r -v 90
+
+  elif  [[ $1 == *".js" ]]; then
+    vim $1
+
+  elif  [[ $1 == *".json" ]]; then
+    vim $1
+
+  elif  [[ $1 == *".txt" ]]; then
+    vim $1
+
+  elif  [[ $1 == *"/."* ]]; then
+    vim $1
+
+  else
+    xdg-open $1
+  fi
+}
+
+findfzf(){
+open $(sudo find $1 -type f -name "*" ! -path "*/.cache/*" ! -path "*/.config/*" ! -path  "*/.vscode/*" ! -path "*/node_modules*/*" ! -path "*/.git/*" ! -path '*/.fzf/*' ! -path '*/.npm/*' ! -path '*/.codeintel/*' ! -path "*/local/" ! -path "*/share/*" | fzf) $2
+}
+
+if  [[ $1 == / ]]; then
+  open $(sudo find / -type f | fzf) $1
+
+elif  [[ $1 == . ]]; then
+  findfzf . $1
+
+elif  [[ $1 == '-a' ]]; then
+  open $(sudo find ~ | fzf) $1
+
+else
+  findfzf ~ $1
+fi

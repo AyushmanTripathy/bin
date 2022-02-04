@@ -1,0 +1,4 @@
+#!/bin/sh
+
+git remote set-url origin \
+"https://pat:$(cat ~/.pat/git)@github.com/AyushmanTripathy/$(basename "$PWD").git"

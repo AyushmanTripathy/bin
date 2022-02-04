@@ -1,0 +1,3 @@
+#!/bin/sh
+
+echo "//registry.npmjs.org/:_authToken=$(cat $HOME/.pat/npm)" > .npmrc

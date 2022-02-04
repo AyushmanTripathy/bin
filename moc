@@ -1,0 +1,37 @@
+#!/bin/sh
+music_db='/mnt/chromeos/MyFiles/musicDB/'
+
+startPlaylist(){
+  mocp -S
+
+  mocp -c
+  # suffle and repeat mode
+  mocp -t s
+  mocp -a "$music_db/$1/" -p -t r -v 50 
+}
+
+startAll(){
+  mocp -S
+  mocp -c
+
+  cd $music_db
+  for dir in * 
+  do 
+    mocp -a "$music_db/$dir/"
+  done
+
+  mocp -t s
+  mocp -p -t r -v 50
+}
+
+while getopts "p s: a x n v:" flag
+do
+    case "${flag}" in
+        p) mocp -G;;
+        s) startPlaylist ${OPTARG};;
+        a) startAll;;
+        v) mocp -v ${OPTARG};;
+        x) mocp -x;;
+        n) mocp -f;;
+    esac
+done

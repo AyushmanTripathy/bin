@@ -1,0 +1,52 @@
+#!/bin/bash
+
+#download playlist
+download_playlist () {
+  echo 'downloading playlist'
+  
+  mkdir ~/download-tmp
+  cd ~/download-tmp
+ 
+  while read -r name; do
+    read -r class
+    read -r link
+
+    echo "downloading $name"
+
+    youtube-dlc -x --audio-format 'mp3' "$link"
+    mv "./$(ls)" "/mnt/chromeos/MyFiles/musicDB/$class/$name.mp3"
+                     
+  done < ~/playlist.txt
+  rm -rf ~/download-tmp
+}
+
+#download music from yt
+download_music (){
+ 
+  echo 'YT link'
+  read link
+  class=$(ls /mnt/chromeos/MyFiles/musicDB | fzf)
+  echo 'Name'
+  read name
+  name=${name// /_}
+  
+  mkdir ~/download-tmp
+  cd ~/download-tmp
+ 
+  #download
+  youtube-dlc -x --audio-format 'mp3' "$link"
+  
+  #move from  temp dir
+  mv "./$(ls)" "/mnt/chromeos/MyFiles/musicDB/$class/$name.mp3"
+  rm -rf ~/download-tmp
+  
+  echo $name >> ~/playlist.txt
+  echo $class >> ~/playlist.txt
+  echo $link >> ~/playlist.txt
+}
+
+if [[ $1 == '-r' ]]; then
+  download_playlist
+else
+  download_music
+fi

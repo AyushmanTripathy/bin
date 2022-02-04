@@ -1,0 +1,21 @@
+#!/bin/sh
+
+echo "remove commits from $(basename $(pwd))?"
+read null
+
+rm -rf .git
+rm-repo $(pwd)
+git init
+git remote add origin null
+update-git
+
+create-repo $(pwd)
+
+echo "init commit?"
+read null
+
+git add .
+git commit -m "init"
+git push -u origin master
+
+echo 'COMPLETE'

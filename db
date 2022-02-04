@@ -1,0 +1,111 @@
+#!/bin/sh
+
+record(){
+  echo $1 >> ~/db/.log
+  date >> ~/db/.log
+  echo '' >> ~/db/.log
+}
+
+add(){
+  echo 'key :-'
+  read  key
+  echo 'value :-'
+  read  value
+
+  record "new $key"
+  echo ${value} >> ~/db/${key// /_}
+  backup 
+}
+
+addFile(){
+  echo 'Name :-'
+  read  name
+    
+  record "new file $name"
+  cp $(find / | fzf) ~/db/${name// /_}
+  backup
+}
+
+fzfprompt(){
+  path="/home/ayushmantripathy2004/db/$(ls ~/db | fzf)"
+}
+
+get(){
+  echo
+  fzfprompt
+  cat $path
+  echo
+}
+
+open(){
+  fzfprompt
+  url=$(cat $path)
+  xdg-open $url
+}
+
+remove(){
+  fzfprompt
+
+  rm $path
+  cd ~/db
+  git add .
+  git commit -m 'file removed'
+
+  record "removed $path" 
+}
+
+list(){
+  ls /home/ayushmantripathy2004/db/
+}
+
+initDB(){
+  mkdir ~/db
+  cd ~/db
+
+  git init
+  git add .
+  git commit -m 'init db'
+  git remote add origin $1
+  
+  record 'init DB'  
+}
+
+backup(){
+  cd ~/db
+
+  echo 'PUSHING'
+  git add .
+  git commit -m"backup commit"
+
+  git remote set-url origin "https://git+pushing:$(cat ~/.pat)@github.com/AyushmanTripathy/db.git"
+
+  git push -u origin master
+  
+  record "backup"
+}
+
+recover(){
+  cd ~/db
+  
+  git pull origin master
+  record "recovered"
+
+  cd ~
+}
+
+while getopts "a h i:f l r o g s b" opt
+
+do
+  case "${opt}" in
+    g) get;;
+    a) add;;
+    o) open;; 
+    r) remove;;
+    l) less ~/db/.log;;
+    b) backup;;
+    f) addFile;;
+    i) initDB ${OPTARG};;
+    s) recover;;
+    h) less ~/scripts/README.md;;
+    esac
+done

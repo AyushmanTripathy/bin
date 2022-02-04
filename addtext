@@ -1,0 +1,15 @@
+#!/bin/sh
+
+ask(){
+  echo 'path for target vedio'
+  read path
+}
+
+echo 'text to add'
+read text
+
+
+path="/mnt/chromeos/removable/youtube/vedio_clips/black.mp4"
+cat /mnt/chromeos/removable/youtube/vedio_clips/black.mp4 >> /dev/null | ask
+
+ffmpeg -i $path -vf "drawtext=text='$text':fontcolor=white:fontsize=24:box=1:boxcolor=black@0.5:boxborderw=5:x=(w-text_w)/2:y=(h-text_h)/2" -codec:a copy text.mp4

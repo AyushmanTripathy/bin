@@ -1,0 +1,6 @@
+#!/bin/sh
+
+ffmpeg -i $1 -i $2 -map 0:v -map 1:a -c:v copy -shortest swap.mp4
+
+cp $1 $HOME/tmp/swap.mp4
+mv swap.mp4 $1

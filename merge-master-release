@@ -1,0 +1,14 @@
+#!/bin/sh
+name=$(basename $1)
+echo '### merge ###' >> $HOME/.git-log
+pwd >> $HOME/.git-log
+echo '' >> $HOME/.git-log
+
+echo "merging master --> release"
+curl \
+  -X POST \
+  -u "AyushmanTripathy":$(cat ~/.pat/git) \
+  -H "Accept: application/vnd.github.v3+json" \
+  "https://api.github.com/repos/AyushmanTripathy/$name/merges" \
+  -d '{"base":"release","head":"master"}'
+echo "merge complete"

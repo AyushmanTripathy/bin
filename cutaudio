@@ -1,0 +1,12 @@
+#!/bin/sh
+
+echo "target is $1"
+echo 'start time'
+read startDuration
+echo 'end time'
+read endDuration
+
+ffmpeg -ss $startDuration -i $1 -c copy -t $endDuration "swap.mp3"
+
+cp $1 $HOME/tmp/swap.mp3
+mv swap.mp3 $1

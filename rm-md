@@ -1,0 +1,29 @@
+#!/bin/bash
+
+regex_md='*.MD'
+regex_license='*LICENSE*'
+count=0
+
+remove(){
+  count=$(( count + 1 ))
+  sudo rm -f $line
+}
+
+echo "target is '$(basename $1)' continue ?"
+read output
+
+if [[ $output != 'yes' ]]
+then
+  echo 'Terminating'
+  exit
+fi
+
+for line in $(find $1 -type f)
+do
+  case "${line^^}" in
+    $regex_md) remove $line;;
+    $regex_license) remove $line;;
+  esac
+done
+
+echo "$count files deleted" 

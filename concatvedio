@@ -1,0 +1,3 @@
+#!/bin/sh
+
+ffmpeg -safe 0 -f concat -i $1 -c copy output.mp4

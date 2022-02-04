@@ -1,0 +1,20 @@
+#!/bin/bash
+
+echo 'Project Name'
+read name
+name="${name// /_}"
+
+projectType=$(ls ~/.init_config | fzf)
+
+cp -r "$HOME/templates/$projectType" "$HOME/$name"
+
+create-repo $name
+
+cd $HOME/$name
+git init
+git remote add origin null 
+update-git
+
+git add .
+git commit -m 'init'
+git push origin master

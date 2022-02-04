@@ -1,0 +1,5 @@
+#!/bin/sh
+ffmpeg -i $1 -q:a 0 -map a swap.mp3
+
+cp $1 $HOME/tmp/swap.mp4
+mv swap.mp3 $1

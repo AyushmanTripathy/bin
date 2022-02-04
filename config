@@ -1,0 +1,58 @@
+#!/bin/sh
+
+push_to_git(){
+  # pushing to git  
+  echo 'PUSHING'
+  update-git
+  git add .
+  git commit -m "backup $(date)"
+  git push -u origin master
+
+  cd $HOME/bin
+  update-git
+  git add .
+  git commit -m "backup $(date)"
+  git push -u origin master
+}
+
+error(){
+  echo $1
+  exit
+}
+
+backup(){
+  cd $HOME/.config/
+  ls backups || mkdir backups
+
+  # copying files
+  cat $HOME/.config/backups.txt | while read line 
+  do
+    echo "backing up $line"
+    cp -r "$HOME/$line" "backups/$(basename $line)" || error "cannot copy $line"
+  done
+
+  push_to_git
+}
+
+retrive(){
+  cd $HOME/.config/
+  ls backups || error 'backups dir not found'
+
+  # copying files
+  cat $HOME/.config/backups.txt | while read line 
+  do
+    echo "retriving $line"
+    cp -r "backups/$(basename $line)" "$HOME/$line" || error "cannot copy $line"
+  done
+
+  push_to_git
+}
+
+while getopts "r b a:" opt
+do
+  case "${opt}" in
+    r) retrive;;
+    b) backup;;
+    a) echo ${OPTARG} >> $HOME/.config/backups.txt;;
+    esac
+done
