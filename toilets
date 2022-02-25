@@ -1,0 +1,6 @@
+cd /usr/share/figlet/
+for line in *
+do
+  toilet $1 -f $line
+  echo $line
+done
