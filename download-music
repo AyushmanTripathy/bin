@@ -26,6 +26,7 @@ download_music (){
   echo 'YT link'
   read link
   class=$(ls /mnt/chromeos/MyFiles/musicDB | fzf)
+  echo "class : $class"
   echo 'Name'
   read name
   name=${name// /_}
@@ -34,15 +35,13 @@ download_music (){
   cd ~/download-tmp
  
   #download
-  youtube-dlc -x --audio-format 'mp3' "$link"
+  youtube-dl -x --audio-format 'mp3' "$link"
   
   #move from  temp dir
   mv "./$(ls)" "/mnt/chromeos/MyFiles/musicDB/$class/$name.mp3"
   rm -rf ~/download-tmp
   
-  echo $name >> ~/playlist.txt
-  echo $class >> ~/playlist.txt
-  echo $link >> ~/playlist.txt
+  echo "$name $class $link" >> ~/playlist.txt
 }
 
 if [[ $1 == '-r' ]]; then

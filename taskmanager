@@ -1,0 +1,15 @@
+#!/bin/sh 
+TM_PATH="/home/ayushmantripathy2004/taskmanager"
+
+prompt() {
+  TOILET=$(toilet $(cat "$TM_PATH/streak.txt") -f mono12.tlf) path=$TM_PATH node "$TM_PATH/src/prompt.js"
+}
+
+log() {
+  path=$TM_PATH node "$TM_PATH/src/log.js"
+}
+
+case $1 in
+  "log") log;;
+  *) prompt;;
+esac

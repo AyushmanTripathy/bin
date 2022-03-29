@@ -1,8 +1,7 @@
-#!/usr/bin/bash
+#!/bin/sh
 
-cd /usr/share/figlet/
-for line in *
-do
-  toilet $1 -f $line
-  echo $line
+for line in /usr/share/figlet/*
+do 
+  toilet $1 -f $(basename $line)
+  echo $(basename $line)
 done
