@@ -11,11 +11,13 @@ prompt() {
   🎯 c (low level)\n
   🎯 haskell (functional programming)\n
   🎯 competative programming.\n
-  🟢 largest streak: $LONGEST_STREAK\n
-  ❌ times failed: $LOST_COUNTER"
-  toilet $STREAK -f mono9.tlf > $tmp_path
+  🟢 programming, exercise.\n
+  ❌ politics, youtube, fap.\n
+  😎 largest streak: $LONGEST_STREAK\n
+  😟 times failed: $LOST_COUNTER\n"
+  toilet $STREAK -f mono12.tlf > $tmp_path
   echo
-  for i in $(seq 2 6)
+  for i in $(seq 2 8)
   do
     cat $tmp_path | head -n $i | tail -1 | tr "\n" " "
     echo "|$(echo $prompt | head -n $i | tail -1)"
@@ -25,6 +27,13 @@ prompt() {
 
 log() {
   DATA=""
+  DATE=$(date +%d/%m/%g)
+  if [ $DATE = $(echo $LAST_LINE | cut -d ' ' -f 1) ]
+  then
+    echo "already logged today."
+    exit
+  fi
+
   for i in $(echo "programming exercise nofap" | tr " " "\n")
   do
     printf "$i [y/n]> "
@@ -66,8 +75,12 @@ log() {
     echo "Wake up before 9am 😞"
   fi
 
-  echo "$(date +%d/%m/%g) $TIME$DATA $STREAK $LONGEST_STREAK $LOST_COUNTER" \
+  echo "$DATE $TIME$DATA $STREAK $LONGEST_STREAK $LOST_COUNTER" \
   >> "$TM_PATH/data.txt"
+  cd $TM_PATH
+  git add .
+  git commit -m "$DATE"
+  git push origin master
 }
 
 case $1 in
