@@ -1,12 +1,73 @@
 #!/bin/sh 
-TM_PATH="/home/ayushmantripathy2004/taskmanager"
+TM_PATH="/home/ayushmantripathy2004/.taskmanager"
+LAST_LINE=$(tail "$TM_PATH/data.txt" -n 1)
+LONGEST_STREAK=$(echo $LAST_LINE | cut -d ' ' -f 7)
+LOST_COUNTER=$(echo $LAST_LINE | cut -d ' ' -f 8)
+STREAK=$(echo $LAST_LINE | cut -d ' ' -f 6)
 
 prompt() {
-  TOILET=$(toilet $(cat "$TM_PATH/streak.txt") -f mono12.tlf) path=$TM_PATH node "$TM_PATH/src/prompt.js"
+  tmp_path="$HOME/.toilet_tmp"
+  prompt="\n
+  🎯 c (low level)\n
+  🎯 haskell (functional programming)\n
+  🎯 competative programming.\n
+  🟢 largest streak: $LONGEST_STREAK\n
+  ❌ times failed: $LOST_COUNTER"
+  toilet $STREAK -f mono9.tlf > $tmp_path
+  echo
+  for i in $(seq 2 6)
+  do
+    cat $tmp_path | head -n $i | tail -1 | tr "\n" " "
+    echo "|$(echo $prompt | head -n $i | tail -1)"
+  done
+  echo
 }
 
 log() {
-  path=$TM_PATH node "$TM_PATH/src/log.js"
+  DATA=""
+  for i in $(echo "programming exercise nofap" | tr " " "\n")
+  do
+    printf "$i [y/n]> "
+    while read -r ans
+    do
+      if [ $ans = "y" ]
+      then 
+        DATA="$DATA 1"
+        break
+      elif [ $ans = "n" ]
+      then
+        DATA="$DATA 0"
+        LOST=1
+        break
+      else
+        printf "$i [y/n]> "
+      fi
+    done
+  done
+  if [ $LOST ]
+  then
+    echo "You can do better. 😞"
+    STREAK=0
+    LOST_COUNTER=$(expr $LOST_COUNTER + 1)
+  else 
+    echo "Well done brah! 😎"
+    STREAK=$(expr $STREAK + 1)
+    if [ $STREAK -gt $LONGEST_STREAK ]
+    then
+      LONGEST_STREAK=$STREAK
+    fi
+  fi
+  printf "Wake up Time> "
+  read TIME
+  if [ $TIME -lt 900 ]
+  then
+    echo "Continue the grind 🙏"
+  else
+    echo "Wake up before 9am 😞"
+  fi
+
+  echo "$(date +%d/%m/%g) $TIME$DATA $STREAK $LONGEST_STREAK $LOST_COUNTER" \
+  >> "$TM_PATH/data.txt"
 }
 
 case $1 in
