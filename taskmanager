@@ -8,13 +8,11 @@ STREAK=$(echo $LAST_LINE | cut -d ' ' -f 6)
 prompt() {
   tmp_path="$HOME/.toilet_tmp"
   prompt="\n
-  🎯 c (low level)\n
-  🎯 haskell (functional programming)\n
-  🎯 competative programming.\n
-  🟢 programming, exercise.\n
+  🎯 NIT ROURKELA\n
+  🟢 study, exercise.\n
   ❌ politics, youtube, fap.\n
   😎 largest streak: $LONGEST_STREAK\n
-  😟 times failed: $LOST_COUNTER\n"
+  😟 times failed: $LOST_COUNTER | $(cat $TM_PATH/data.txt | wc -l)days.\n"
   toilet $STREAK -f mono12.tlf > $tmp_path
   echo
   for i in $(seq 2 8)
@@ -23,6 +21,7 @@ prompt() {
     echo "|$(echo $prompt | head -n $i | tail -1)"
   done
   echo
+  rm -rf $tmp_path
 }
 
 log() {

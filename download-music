@@ -23,11 +23,11 @@ download_playlist () {
 #download music from yt
 download_music (){
  
-  echo 'YT link'
+  printf "youtube link> "
   read link
   class=$(ls /mnt/chromeos/MyFiles/musicDB | fzf)
   echo "class : $class"
-  echo 'Name'
+  printf 'Name Of Song> '
   read name
   name=${name// /_}
   
