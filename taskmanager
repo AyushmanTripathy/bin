@@ -11,9 +11,9 @@ prompt() {
   🎯 NIT ROURKELA\n
   🟢 study, exercise.\n
   ❌ politics, youtube, fap.\n
-  😎 largest streak: $LONGEST_STREAK\n
-  😟 times failed: $LOST_COUNTER | $(cat $TM_PATH/data.txt | wc -l)days.\n"
-  toilet $STREAK -f mono12.tlf > $tmp_path
+  😎 streak: $STREAK | $(node --eval 'console.log(Math.floor((Date.now() - new Date("3/17/2022").getTime())/(24 * 60 * 60 * 1000)))')\n
+  😟 times failed: $LOST_COUNTER\n"
+  toilet $(node --eval 'console.log(Math.floor((new Date("7/2/2022").getTime() - Date.now())/(24 * 60 * 60 * 1000)))') -f mono12.tlf > $tmp_path
   echo
   for i in $(seq 2 8)
   do
@@ -33,7 +33,7 @@ log() {
     exit
   fi
 
-  for i in $(echo "programming exercise nofap" | tr " " "\n")
+  for i in $(echo "study exercise nofap" | tr " " "\n")
   do
     printf "$i [y/n]> "
     while read -r ans

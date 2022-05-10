@@ -1,0 +1,5 @@
+#!/bin/bash
+
+COUNT=$(node --eval "console.log(Math.floor(((Date.now() - new Date('03/17/22'))
+/ (1000 * 3600 * 24))))")
+mv $1 "$HOME/transformation/$COUNT.${1##*.}"
