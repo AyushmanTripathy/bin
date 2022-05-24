@@ -8,12 +8,12 @@ STREAK=$(echo $LAST_LINE | cut -d ' ' -f 6)
 prompt() {
   tmp_path="$HOME/.toilet_tmp"
   prompt="\n
-  🎯 NIT ROURKELA\n
+  🎯 JEE MAINS\n
   🟢 study, exercise.\n
   ❌ politics, youtube, fap.\n
   😎 streak: $STREAK | $(node --eval 'console.log(Math.floor((Date.now() - new Date("3/17/2022").getTime())/(24 * 60 * 60 * 1000)))')\n
   😟 times failed: $LOST_COUNTER\n"
-  toilet $(node --eval 'console.log(Math.floor((new Date("7/2/2022").getTime() - Date.now())/(24 * 60 * 60 * 1000)))') -f mono12.tlf > $tmp_path
+  toilet $(node --eval 'console.log(Math.floor((Date.now() - new Date("5/22/2022").getTime())/(24 * 60 * 60 * 1000)))') -f mono12.tlf > $tmp_path
   echo
   for i in $(seq 2 8)
   do
