@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 open(){
 
@@ -14,6 +14,7 @@ open(){
 
   elif  [[ $1 == *".m3u" ]]; then
     mocp -S
+    mocp -c
     mocp -a $1 -p -t r -v 90
 
   elif  [[ $1 == *".js" ]]; then
@@ -34,11 +35,17 @@ open(){
 }
 
 findfzf(){
-open $(sudo find $1 -type f -name "*" ! -path "*/.cache/*" ! -path "*/.config/*" ! -path  "*/.vscode/*" ! -path "*/node_modules*/*" ! -path "*/.git/*" ! -path '*/.fzf/*' ! -path '*/.npm/*' ! -path '*/.codeintel/*' ! -path "*/local/" ! -path "*/share/*" | fzf) $2
+open $(sudo find $1 -type f -name "*" ! -path "*/.cache/*" ! -path "*/node_modules*/*" ! -path "*/.git/*" ! -path '*/.fzf/*' ! -path '*/.npm/*' ! -path '*/.codeintel/*' ! -path "*/share/*" | fzf) $2
 }
 
 if  [[ $1 == / ]]; then
   open $(sudo find / -type f | fzf) $1
+
+elif [[ $1 == '-l' ]]; then
+  xdg-open "https://$2"
+
+elif [[ $1 == '-c' ]]; then
+  xdg-open "https://$2.com"
 
 elif  [[ $1 == . ]]; then
   findfzf . $1
