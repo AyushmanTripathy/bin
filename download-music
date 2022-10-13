@@ -1,5 +1,7 @@
 #!/bin/bash
 
+musicDB="/mnt/chromeos/MyFiles/musicDB"
+
 #download playlist
 download_playlist () {
   echo 'downloading playlist'
@@ -14,7 +16,7 @@ download_playlist () {
     echo "downloading $name"
 
     youtube-dlc -x --audio-format 'mp3' "$link"
-    mv "./$(ls)" "/mnt/chromeos/MyFiles/musicDB/$class/$name.mp3"
+    mv "./$(ls)" "$musicDB/$class/$name.mp3"
                      
   done < ~/playlist.txt
   rm -rf ~/download-tmp
@@ -25,7 +27,8 @@ download_music (){
  
   printf "youtube link> "
   read link
-  class=$(ls /mnt/chromeos/MyFiles/musicDB | fzf)
+  lang=$(find $musicDB -type d -printf '%f\n'| fzf)
+  class=$(find $musicDB -maxdepth 1 -type f -printf '%f\n'| fzf)
   echo "class : $class"
   printf 'Name Of Song> '
   read name
@@ -36,12 +39,18 @@ download_music (){
  
   #download
   youtube-dl -x --audio-format 'mp3' "$link"
+
+  if [ $? -eq 0 ]; then
+    # move from  temp dir
+    mv "./$(ls)" "$musicDB/$lang/$name.mp3"
+    echo "$lang/$name.mp3" >> "$musicDB/$class"
+    echo "$name $class $link" >> ~/playlist.txt
+    echo "SUCCESS!"
+  else
+    echo "FAILED"
+  fi
   
-  #move from  temp dir
-  mv "./$(ls)" "/mnt/chromeos/MyFiles/musicDB/$class/$name.mp3"
   rm -rf ~/download-tmp
-  
-  echo "$name $class $link" >> ~/playlist.txt
 }
 
 if [[ $1 == '-r' ]]; then
