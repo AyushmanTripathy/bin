@@ -44,8 +44,6 @@ retrive(){
     echo "retriving $line"
     cp -r "backups/$(basename $line)" "$HOME/$line" || error "cannot copy $line"
   done
-
-  push_to_git
 }
 
 while getopts "r b a:" opt
