@@ -44,7 +44,7 @@ download_music (){
     # move from  temp dir
     mv "./$(ls)" "$musicDB/$lang/$name.mp3"
     echo "$lang/$name.mp3" >> "$musicDB/$class"
-    echo "$name $class $link" >> ~/playlist.txt
+    echo "$lang/$name.mp3 $class $link" >> ~/playlist.txt
     echo "SUCCESS!"
   else
     echo "FAILED"

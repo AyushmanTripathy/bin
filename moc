@@ -7,10 +7,13 @@ startPlaylist(){
   mocp -c
   # suffle and repeat mode
   mocp -t s
+
+  list=""
   for name in $(cat "$music_db/$1.txt")
   do
-    mocp -a "$music_db/$name"
+    list="$list $music_db$name"
   done
+  mocp -a $list
   mocp -p -t r -v 50 
 }
 
