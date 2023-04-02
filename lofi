@@ -1,6 +1,0 @@
-#!/bin/sh
-
-mocp -S
-mocp -c
-mocp -t s
-mocp -a "/mnt/chromeos/MyFiles/lofi/" -p -t r -v 70
