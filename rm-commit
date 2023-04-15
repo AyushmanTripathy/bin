@@ -7,8 +7,8 @@ rm -rf .git
 rm-repo $(pwd)
 git init
 git remote add origin null
-update-git
 
+update-remote
 create-repo $(pwd)
 
 echo "init commit?"

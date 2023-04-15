@@ -15,7 +15,7 @@ while getopts "w g r y s o" opt
 
 do
   case "${opt}" in
-    g) openfzf "https://github.com/AyushmanTripathy";;
+    g) openfzf "https://github.com/$GITHUB_USERNAME";;
     r) open "https://www.reddit.com/r/" '+';;
     y) open "https://www.youtube.com/results?search_query=" '+';;
     s) open "https://www.google.com/search?q=" '+';;

@@ -1,4 +1,0 @@
-#!/bin/bash
-
-url="https://$1"
-xdg-open $url

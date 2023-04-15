@@ -1,9 +1,10 @@
 #!/bin/sh
 name=$(basename $1)
-echo "deleting $name"
+printf "delete repo $name? "
+read NULL
 
 curl \
   -X DELETE \
   -H "Accept: application/vnd.github.v3+json" \
-  -H "Authorization: token $(cat ~/.pat/git)" \
-   "https://api.github.com/repos/AyushmanTripathy/$name"
+  -H "Authorization: token $(cat ~/.pat/$GITHUB_USERNAME)" \
+  "https://api.github.com/repos/$GITHUB_USERNAME/$name"

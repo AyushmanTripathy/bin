@@ -1,6 +1,6 @@
 #!/bin/sh
 
-update-git
+update-remote
 
 printf "Commit message> "
 read message

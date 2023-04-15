@@ -1,6 +1,5 @@
 #!/bin/sh 
 TM_PATH="/home/ayushmantripathy2004/.taskmanager"
-LAST_LINE=$(tail "$TM_PATH/data.txt" -n 1)
 LONGEST_STREAK=$(echo $LAST_LINE | cut -d ' ' -f 1)
 LOST_COUNTER=$(echo $LAST_LINE | cut -d ' ' -f 2)
 STREAK=$(echo $LAST_LINE | cut -d ' ' -f 3)

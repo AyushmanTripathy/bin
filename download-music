@@ -30,6 +30,7 @@ download_music (){
   lang=$(find $musicDB -type d -printf '%f\n'| fzf)
   class=$(find $musicDB -maxdepth 1 -type f -printf '%f\n'| fzf)
   echo "class : $class"
+  echo "language : $lang"
   printf 'Name Of Song> '
   read name
   name=${name// /_}

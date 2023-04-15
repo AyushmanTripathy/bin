@@ -1,0 +1,11 @@
+#!/bin/sh
+
+if [ $# -eq 0 ]
+then
+  username="$GITHUB_USERNAME"
+else
+  username="$1"
+fi
+
+git remote set-url origin \
+"https://pat:$(cat ~/.pat/$username)@github.com/$username/$(basename "$PWD").git"

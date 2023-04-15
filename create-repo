@@ -1,13 +1,14 @@
 #!/bin/sh
 name=$(basename $1)
-echo "creating $name"
+printf "create repo $name?"
+read NULL
 
 echo "### creating ###" >> $HOME/.git-log
 echo "name = $name" >> $HOME/.git-log
 echo '' >> $HOME/.git-log
 
 curl -X POST \
-  -H "Authorization: token $(cat ~/.pat/git)" \
+  -H "Authorization: token $(cat ~/.pat/$GITHUB_USERNAME)" \
   -H 'Content-Type: application/x-www-form-urlencoded' \
   -d '{"name":"'"$name"'"}' \
   https://api.github.com/user/repos
