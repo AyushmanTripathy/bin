@@ -29,8 +29,8 @@ download_music (){
   read link
   lang=$(find $musicDB -type d -printf '%f\n'| fzf)
   class=$(find $musicDB -maxdepth 1 -type f -printf '%f\n'| fzf)
-  echo "class : $class"
   echo "language : $lang"
+  echo "class : $class"
   printf 'Name Of Song> '
   read name
   name=${name// /_}
@@ -39,7 +39,7 @@ download_music (){
   cd ~/download-tmp
  
   #download
-  youtube-dl -x --audio-format 'mp3' "$link"
+  yt-dlp -x -f worst --audio-format 'mp3' "$link"
 
   if [ $? -eq 0 ]; then
     # move from  temp dir
