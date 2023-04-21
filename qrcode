@@ -1,0 +1,4 @@
+#!/bin/sh
+
+qrencode -o $HOME/tmp/qrcode.png $1
+sxiv $HOME/tmp/qrcode.png
