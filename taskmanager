@@ -13,7 +13,7 @@ prompt() {
   ❌ politics, youtube, fap.\n
   😎 streak: $STREAK | $LONGEST_STREAK\n
   😟 times lost: $LOST_COUNTER\n"
-  toilet $(node --eval 'console.log(Math.floor((Date.now() - new Date("4/16/2023").getTime())/(24*60*60*1000)))') -f mono12.tlf > $tmp_path
+  toilet $(node --eval 'console.log(Math.floor((Date.now() - new Date("4/25/2023").getTime())/(24*60*60*1000)))') -f mono12.tlf > $tmp_path
   echo
   for i in $(seq 2 8)
   do
