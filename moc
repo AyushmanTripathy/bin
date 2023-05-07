@@ -1,5 +1,5 @@
 #!/bin/sh
-music_db='/mnt/chromeos/MyFiles/musicDB/'
+music_db="$HOME/Music"
 
 startPlaylist(){
   mocp -S
@@ -11,7 +11,7 @@ startPlaylist(){
   list=""
   for name in $(cat "$music_db/$1.txt")
   do
-    list="$list $music_db$name"
+    list="$list $music_db/$name"
   done
   mocp -a $list
   mocp -p -t r -v 50 
