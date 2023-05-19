@@ -1,6 +1,6 @@
 #!/bin/bash
 
-musicDB="$HOME/Music"
+musicDB="$MUSICDB"
 
 #download playlist
 download_playlist () {

@@ -1,40 +1,56 @@
 #!/bin/sh
-music_db="$HOME/Music"
+music_db="$MUSICDB"
 
-startPlaylist(){
+startServer(){
   mocp -S
-
   mocp -c
-  # suffle and repeat mode
   mocp -t s
+  mocp -t r -v 50
+}
 
+addEverySong(){
+  mocp -a "$music_db"
+}
+
+addPlaylist(){
   list=""
   for name in $(cat "$music_db/$1.txt")
   do
     list="$list $music_db/$name"
   done
   mocp -a $list
-  mocp -p -t r -v 50 
+  mocp -p
 }
 
-startAll(){
-  mocp -S
+addLang(){
+  list=""
+  for name in $(ls -1 "$MUSICDB/$1")
+  do
+    mocp -a "$music_db/$1/$name"
+  done
+  mocp -p
+}
+
+findSong(){
+  name=$(find $music_db -type f | fzf)
   mocp -c
-
-  mocp -a "$music_db/"
-
-  mocp -t s
-  mocp -p -t r -v 50
+  mocp -a "$name"
+  mocp -p
 }
 
-while getopts "p s: a x n v:" flag
+while getopts "s a: l: p v: x n c d:" flag
 do
     case "${flag}" in
+        s) startServer;;
+        a) addPlaylist ${OPTARG};;
+        l) addLang ${OPTARG};;
+        e) addEverySong;;
+        f) findSong;;
         p) mocp -G;;
-        s) startPlaylist ${OPTARG};;
-        a) startAll;;
         v) mocp -v ${OPTARG};;
         x) mocp -x;;
         n) mocp -f;;
+        c) mocp -c;;
+        d) music_db=${OPTARG};;
     esac
 done
