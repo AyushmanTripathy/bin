@@ -2,29 +2,8 @@
 
 musicDB="$MUSICDB"
 
-#download playlist
-download_playlist () {
-  echo 'downloading playlist'
-  
-  mkdir ~/download-tmp
-  cd ~/download-tmp
- 
-  while read -r name; do
-    read -r class
-    read -r link
-
-    echo "downloading $name"
-
-    youtube-dlc -x --audio-format 'mp3' "$link"
-    mv "./$(ls)" "$musicDB/$class/$name.mp3"
-                     
-  done < ~/playlist.txt
-  rm -rf ~/download-tmp
-}
-
 #download music from yt
 download_music (){
- 
   printf "youtube link> "
   read link
   lang=$(find $musicDB -type d -printf '%f\n'| fzf)
@@ -54,8 +33,8 @@ download_music (){
   rm -rf ~/download-tmp
 }
 
-if [[ $1 == '-r' ]]; then
-  download_playlist
+if [[ $1 == '-m' ]]; then
+  echo "not completed the script"
 else
   download_music
 fi

@@ -10,6 +10,7 @@ startServer(){
 
 addEverySong(){
   mocp -a "$music_db"
+  mocp -p
 }
 
 addPlaylist(){
@@ -38,7 +39,7 @@ findSong(){
   mocp -p
 }
 
-while getopts "s a: l: p v: x n c d:" flag
+while getopts "s a: l: e p v: x n c d:" flag
 do
     case "${flag}" in
         s) startServer;;
