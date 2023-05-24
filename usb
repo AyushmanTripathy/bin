@@ -1,0 +1,68 @@
+#!/bin/bash
+set -e
+
+mountUsb() {
+  partition=$(lsblk | sed -n '1!p' | dmenu -p "Choose Partition: " -l 10 | cut -b 7- | cut -d' ' -f1)
+  usb_label=$(file "/dev/$partition" -s | cut -d':' -f3 | sed -e 's/ *//g' -e 's/"//g')
+
+  mkdir -p "/media/$usb_label"
+  echo "$partition as $usb_label"
+  mount "/dev/$partition" "/media/$usb_label" 
+  if [ $? -eq 0 ]
+  then
+    echo "Mounted $usb_label" "mounted $partition as $usb_label"
+  else
+    echo "Mount Failed for $partition"
+  fi
+}
+
+dismount() {
+  usb_label=$(ls /media/ | dmenu -p "Choose Label: " -l 10)
+  partition=$(findmnt -n -r -o SOURCE "/media/$usb_label")
+  umount "$partition"
+  if [ $? -eq 0 ]
+  then
+    echo "Unmounted $usb_label"
+  else
+    echo "Unmount Failed for $usb_label"
+    exit
+  fi
+  udisksctl power-off -b "$partition"
+  if [ $? -eq 0 ]
+  then
+    rm -rf "/media/$usb_label"
+    echo "Powered off $usb_label"
+    echo "safe to eject"
+  else
+    echo "Poweroff failed for $usb_label"
+    exit
+  fi
+}
+
+poweroff() {
+  partition=$(lsblk | sed -n '1!p' | dmenu -p "Choose Partition: " -l 10 | cut -b 7- | cut -d' ' -f1)
+  udisksctl power-off -b "$partition"
+  if [ $? -eq 0 ]
+  then
+    echo "Powered off $usb_label"
+    echo "safe to eject"
+  else
+    echo "Poweroff failed for $usb_label"
+    exit
+  fi
+}
+
+if [ "$EUID" -ne 0 ]
+then 
+  echo "Please run usb as root"
+  exit
+fi
+
+while getopts "m e p" flag
+do
+  case "${flag}" in
+    m) mountUsb;;
+    e) dismount;;
+    p) poweroff;;
+  esac
+done

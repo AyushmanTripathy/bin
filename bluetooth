@@ -1,0 +1,14 @@
+#!/bin/bash
+set -e
+
+bluetoothctl power on
+notify-send "scanning for bluetooth devices"
+bluetoothctl --timeout 3 scan on
+
+line=$(bluetoothctl devices | cut -b 8- | sed -e "s/ /|/" | dmenu -p "Choose Device: " -l 10)
+mac=$(echo $line | cut -d'|' -f1)
+name=$(echo $line | cut -d'|' -f2)
+
+bluetoothctl pair $mac && notify-send "Paired with $name"
+bluetoothctl trust $mac 
+bluetoothctl connect $mac && notify-send "Connected with $name"
