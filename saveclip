@@ -1,0 +1,13 @@
+#!/bin/sh
+
+clipboard="$HOME/tmp/clipboard.txt"
+
+while getopts "s a: l: e p v: x n c d:" flag
+do
+    case "${flag}" in
+        s) echo "$(xclip -o)\n" >> $clipboard && exit;;
+    esac
+done
+
+line=$(cat $clipboard | dmenu -p "Select: " -l 10)
+echo "$line" | sed -e 's/\\n//' | xclip -selection clipboard

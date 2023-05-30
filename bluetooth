@@ -9,6 +9,6 @@ line=$(bluetoothctl devices | cut -b 8- | sed -e "s/ /|/" | dmenu -p "Choose Dev
 mac=$(echo $line | cut -d'|' -f1)
 name=$(echo $line | cut -d'|' -f2)
 
-bluetoothctl pair $mac && notify-send "Paired with $name"
+bluetoothctl pair $mac && notify-send "Paired with $name" || notify-send "Paring failed with $name"
 bluetoothctl trust $mac 
-bluetoothctl connect $mac && notify-send "Connected with $name"
+bluetoothctl connect $mac && notify-send "Connected with $name" || notify-send "Connection failed with $name"

@@ -1,0 +1,41 @@
+#!/bin/sh
+
+backlight_location="/sys/class/backlight/intel_backlight"
+brightness_file="$backlight_location/brightness"
+max_brightness="$(cat "$backlight_location/max_brightness")"
+b=$(cat $brightness_file)
+
+get() {
+  echo "B-$(expr $b \* 100 / $max_brightness)%"
+}
+
+increment(){
+  b=$(expr $1 + $b)
+  if [ $b -gt $max_brightness ]
+  then
+    notify-send "Max brightness"
+  else
+    echo $b > $brightness_file
+  fi
+  pkill -RTMIN+11 dwmblocks
+}
+
+decrement(){
+  b=$(expr $b - $1)
+  if [ $b -lt 0 ]
+  then
+    notify-send "Min brightness"
+  else
+    echo $b > $brightness_file
+  fi 
+  pkill -RTMIN+11 dwmblocks
+}
+
+while getopts "g i: d:" flag
+do
+    case "${flag}" in
+      g) get;;
+      i) increment ${OPTARG};;
+      d) decrement ${OPTARG};;
+    esac
+done
