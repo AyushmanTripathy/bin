@@ -1,16 +1,17 @@
 #!/bin/sh
 music_db="$MUSICDB"
+mocp_command="mocp -M $XDG_CONFIG_HOME/moc"
 
 startServer(){
-  mocp -S
-  mocp -c
-  mocp -t s
-  mocp -t r -v 50
+  $mocp_command -S
+  $mocp_command -c
+  $mocp_command -t s
+  $mocp_command -t r -v 50
 }
 
 addEverySong(){
-  mocp -a "$music_db"
-  mocp -p
+  $mocp_command -a "$music_db"
+  $mocp_command -p 
 }
 
 addPlaylist(){
@@ -19,24 +20,24 @@ addPlaylist(){
   do
     list="$list $music_db/$name"
   done
-  mocp -a $list
-  mocp -p
+  $mocp_command -a $list
+  $mocp_command -p
 }
 
 addLang(){
   list=""
   for name in $(ls -1 "$MUSICDB/$1")
   do
-    mocp -a "$music_db/$1/$name"
+    $mocp_command -a "$music_db/$1/$name"
   done
-  mocp -p
+  $mocp_command -p
 }
 
 findSong(){
   name=$(find $music_db -type f | fzf)
-  mocp -c
-  mocp -a "$name"
-  mocp -p
+  $mocp_command -c
+  $mocp_command -a "$name"
+  $mocp_command -p
 }
 
 while getopts "s a: l: e p v: x n c d:" flag
@@ -47,11 +48,11 @@ do
         l) addLang ${OPTARG};;
         e) addEverySong;;
         f) findSong;;
-        p) mocp -G;;
-        v) mocp -v ${OPTARG};;
-        x) mocp -x;;
-        n) mocp -f;;
-        c) mocp -c;;
+        p) $mocp_command -G;;
+        v) $mocp_command -v ${OPTARG};;
+        x) $mocp_command -x;;
+        n) $mocp_command -f;;
+        c) $mocp_command -c;;
         d) music_db=${OPTARG};;
     esac
 done

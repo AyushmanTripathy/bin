@@ -1,0 +1,6 @@
+#!/bin/sh
+
+info=$(bluetoothctl info)
+name=$(echo $info)
+
+echo $info

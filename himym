@@ -1,0 +1,36 @@
+#!/bin/sh
+list="$HOME/himym/himym.txt"
+episode="$HOME/himym/episodes.txt"
+stack="$HOME/himym/stack.txt"
+ 
+load(){
+  line=$(cat $episode | dmenu -l 10 -p "Select Episode: ")
+  name=$(echo $line | cut -d'|' -f2)
+  
+  echo $name
+  cat $list | grep -e "$name" > "$stack"
+  count=$(cat $stack | wc -l)
+
+  if [ $count -eq 0 ]
+  then
+    echo "Not Found!"
+  else
+    echo "Found!"
+    cat $stack
+  fi
+}
+
+pop() {
+  cat $stack > /tmp/himym_stack.txt
+  cat $stack | head -n 1 | cut -d'|' -f1  | xclip -selection clipboard
+  cat /tmp/himym_stack.txt | sed -n '1!p' | tee $stack
+}
+
+while getopts "n" flag
+do
+    case "${flag}" in
+        n) pop && exit;;
+    esac
+done
+
+load

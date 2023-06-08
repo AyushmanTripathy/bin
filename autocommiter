@@ -2,17 +2,17 @@
 
 LIMIT="5"
 DATE=$(date +%D)
-LOG="$HOME/.autocommiter/log.txt"
+LOG="$XDG_DATA_HOME/.autocommiter/log.txt"
 
 push(){
-  cd $HOME/.autocommiter
+  cd $XDG_DATA_HOME/.autocommiter
   update-remote
   git add .
   git commit -m $DATE --quiet
-  git push origin master --quiet > /dev/null &
+  git push origin master --quiet
 }
 
-LINE=$(tail -n 1 $HOME/.autocommiter/log.txt)
+LINE=$(tail -n 1 $LOG)
 REC_DATE=$(echo $LINE | cut -d' ' -f1)
 
 if [ $DATE = $REC_DATE ]

@@ -2,7 +2,7 @@
 
 clipboard="$HOME/tmp/clipboard.txt"
 
-while getopts "s a: l: e p v: x n c d:" flag
+while getopts "s" flag
 do
     case "${flag}" in
         s) echo "$(xclip -o)\n" >> $clipboard && exit;;
