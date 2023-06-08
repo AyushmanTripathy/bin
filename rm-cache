@@ -1,6 +1,0 @@
-#!/bin/sh
-
-rm -rf ~/.cache
-mkdir ~/.cache
-
-rm -rf ~/.npm/_cacache/

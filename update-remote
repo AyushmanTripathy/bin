@@ -8,4 +8,4 @@ else
 fi
 
 git remote set-url origin \
-"https://pat:$(cat ~/.pat/$username)@github.com/$username/$(basename "$PWD").git"
+"https://pat:$(cat ~/private/.pat/$username)@github.com/$username/$(basename "$PWD").git"

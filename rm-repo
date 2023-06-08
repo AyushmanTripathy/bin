@@ -6,5 +6,5 @@ read NULL
 curl \
   -X DELETE \
   -H "Accept: application/vnd.github.v3+json" \
-  -H "Authorization: token $(cat ~/.pat/$GITHUB_USERNAME)" \
+  -H "Authorization: token $(cat ~/private/.pat/$GITHUB_USERNAME)" \
   "https://api.github.com/repos/$GITHUB_USERNAME/$name"

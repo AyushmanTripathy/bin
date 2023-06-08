@@ -6,7 +6,7 @@ count=0
 
 remove(){
   count=$(( count + 1 ))
-  sudo rm -f $line
+  rm -f $line
 }
 
 echo "target is '$(basename $1)' continue ?"

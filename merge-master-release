@@ -7,7 +7,7 @@ echo '' >> $HOME/.git-log
 echo "merging master --> release"
 curl \
   -X POST \
-  -u "$GITHUB_USERNAME":$(cat ~/.pat/$GITHUB_USERNAME) \
+  -u "$GITHUB_USERNAME":$(cat ~/private/.pat/$GITHUB_USERNAME) \
   -H "Accept: application/vnd.github.v3+json" \
   "https://api.github.com/repos/$GITHUB_USERNAME/$name/merges" \
   -d '{"base":"release","head":"master"}'

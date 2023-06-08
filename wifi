@@ -1,6 +1,6 @@
 #!/bin/sh
 
-file="$HOME/wifi_passwords.txt"
+file="$HOME/private/wifi_passwords.txt"
 
 line=$(nmcli device wifi list | sed -n '1!p' | cut -b 9- | dmenu -p "Select Wifi: " -l 10)
 BSSID=$(echo $line | cut -d' ' -f1)
