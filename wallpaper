@@ -1,0 +1,6 @@
+#!/bin/sh
+
+DIR="$HOME/pics/wallpapers"
+file=$(ls $DIR | dmenu -p "Choose Wallpaper: " -l 10)
+option=$(printf "zoom\ncenter\nclear\nfocus\nmaximize\ntile" | dmenu -p "Choose Style: " -l 10)
+xwallpaper --$option $DIR/$file

@@ -34,13 +34,15 @@ addLang(){
 }
 
 findSong(){
-  name=$(find $music_db -type f | fzf)
-  $mocp_command -c
-  $mocp_command -a "$name"
-  $mocp_command -p
+  tmp="/tmp/playlist_tmp.txt"
+  playlist="$XDG_CONFIG_HOME/moc/playlist.m3u"
+  cat $playlist | grep -v -e "#" > $tmp
+  line=$(cat $tmp | grep -o -e "/.[^\/]*.mp3" | sed -e "s/\///" | dmenu -p "Play Song: " -l 10)
+  line=$(cat $tmp | grep -e "$line")
+  $mocp_command -a $line
 }
 
-while getopts "s a: l: e p v: x n c d:" flag
+while getopts "s a: l: e p v: x n c d: f" flag
 do
     case "${flag}" in
         s) startServer;;

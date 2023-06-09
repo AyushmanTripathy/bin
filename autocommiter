@@ -2,10 +2,11 @@
 
 LIMIT="5"
 DATE=$(date +%D)
-LOG="$XDG_DATA_HOME/.autocommiter/log.txt"
+DIR="$HOME/.local/share/.autocommiter"
+LOG="$DIR/log.txt"
 
 push(){
-  cd $XDG_DATA_HOME/.autocommiter
+  cd $DIR
   update-remote
   git add .
   git commit -m $DATE --quiet

@@ -1,0 +1,24 @@
+#!/bin/sh
+
+tmp_file="/tmp/tmp_info.txt"
+echo "bluetooth: $(get-bluetooth-device-info)" >> $tmp_file
+
+wifi_tmp_file="/tmp/wifi_tmp_info.txt"
+nmcli device > $wifi_tmp_file
+
+echo "wifi: $(cat $wifi_tmp_file | grep -e "wifi" | awk '{ print $3" - "$4 }')" >> $tmp_file
+
+printf "\ndisk usage:\n" >> $tmp_file
+df -h | grep -e "^/dev/" | cut -b 6- >> $tmp_file
+
+mocp_command="mocp -M $XDG_CONFIG_HOME/moc"
+song_name=$($mocp_command -Q "%file")
+echo $song_name
+if [ $? -eq 0 ]
+then
+  printf "\ncurrenting playing: $($mocp_command -Q '(%ct/%tt)')\n" >> $tmp_file
+  basename $song_name | sed -e "s/_/ /g" >> $tmp_file
+fi
+
+notify-send "$(cat $tmp_file)"
+rm $tmp_file
