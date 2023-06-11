@@ -1,0 +1,38 @@
+#!/bin/sh
+
+dir="$HOME/ocw"
+
+nextLecture(){
+  course=$(find $dir -maxdepth 1 -type f | grep -v -e "Readme.md" | sed -e "s/^.*\///" | sed -e "s/\.txt//g" | dmenu -p "Choose Course: " -l 10)
+  lecture=$(cat "$dir/$course.txt" | grep -F "[ ]" | head -n 1 | cut -b 5-)
+
+  if [ -z $lecture ]
+  then
+    notify-send "Course Complete!"
+  else
+    echo "https://youtu.be/$lecture" | xclip -sel clipboard
+  fi
+}
+
+markLecture(){
+  course=$(find $dir -maxdepth 1 -type f | grep -v -e "Readme.md" | sed -e "s/^.*\///" | sed -e "s/\.txt//g" | dmenu -p "Choose Course: " -l 10)
+  file="$dir/$course.txt"
+  tmp_file="/tmp/ocw.txt"
+
+  cat $file | grep -F "[x]" >> $tmp_file
+  cat $file | grep -F "[ ]" | head -n 1 | sed -e "s/\[ \]/\[x\]/" >> $tmp_file
+  cat $file | grep -F "[ ]" | sed -n "1!p" >> $tmp_file
+  echo "" >> $tmp_file
+  cat $file | grep -e "^[^\[]" >> $tmp_file
+  cp $tmp_file $file
+  rm $tmp_file
+}
+
+while getopts "n m o" flag
+do
+    case "${flag}" in
+        n) nextLecture;;
+        m) markLecture;;
+        o) xdg-open $(node $dir/frontend/index.js)
+    esac
+done
