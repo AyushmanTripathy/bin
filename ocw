@@ -28,11 +28,20 @@ markLecture(){
   rm $tmp_file
 }
 
-while getopts "n m o" flag
+openCode() {
+  tmp_dir="$HOME/tmp/ocw-code"
+  rm -r $tmp_dir
+  mkdir -p $tmp_dir
+  cd $tmp_dir
+  unzip $(node $dir/frontend/index.js)
+}
+
+while getopts "n m o c" flag
 do
     case "${flag}" in
         n) nextLecture;;
         m) markLecture;;
-        o) xdg-open $(node $dir/frontend/index.js)
+        o) xdg-open $(node $dir/frontend/index.js);;
+        c) openCode;;
     esac
 done
