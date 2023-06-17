@@ -1,6 +1,6 @@
 #/bin/sh
 
-LIMIT="5"
+LIMIT="10"
 DATE=$(date +%D)
 DIR="$HOME/.local/share/.autocommiter"
 LOG="$DIR/log.txt"

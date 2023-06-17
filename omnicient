@@ -1,0 +1,214 @@
+#!/usr/bin/env python3
+from urllib.request import urlopen, Request
+from urllib.parse import quote as urlencode
+from os.path import exists as file_exists
+from os import makedirs
+
+from bs4 import BeautifulSoup
+import sys
+
+google_search_url = "https://google.com/search?q="
+tmp_storage = "/tmp/omnicient/"
+hdr = { 'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:53.0) Gecko/20100101 Firefox/53.0' }
+
+# settings
+options = {
+    "use_cache": True,
+    "show_search_query": True,
+    "show_website_brefs": True,
+    "show_lists_info": False,
+    "show_debug_info": False
+}
+
+colors = ["\x1b[0m", "\x1b[4m", "\x1b[2m", "\x1b[31m"]
+class_names = ["AVsepf", "Ap5OSd"]
+
+def debug(s):
+    if (options["show_debug_info"]):
+        print(format_color("[DEBUG] " + s, 2))
+
+def search(query):
+    soup = BeautifulSoup(fetch_html(query), "html.parser")
+
+    if (options["show_search_query"]):
+        print_search_query(soup)
+    if (options["show_lists_info"]):
+        return check_for_list(soup, 10)
+
+    if (find_class(soup, "iBp4i")): return
+    if (check_for_translation(soup)): return
+    if (show_descripton(soup)): return
+    if (check_for_list(soup, 10)): options["show_website_brefs"] = False
+
+    for name in class_names:
+        if (find_class(soup, name)): return
+    if (options["show_website_brefs"]):
+        website_brefs(soup, 2)
+
+def show_descripton(soup):
+    debug("finding description")
+
+    # heading
+    heading = soup.select(".zBAuLc .deIvCb");
+    if (heading and len(heading) == 1):
+        print_ele(heading[0], 1)
+ 
+    # description
+    found = False
+    for div in soup.select(".Gx5Zad:not(.fP1Qef,.Pg70bf)"):
+        for match in div.select("div.s3v9rd div.s3v9rd"):
+            found = True
+            print_ele(match)
+    return found
+
+def check_for_list(soup, count):
+    debug("checking for lists")
+
+    cast = soup.find("div", class_="idg8be")
+    if (not cast): return False
+    printed = False
+    for person in cast.find_all("a", class_="BVG0Nb"):
+        name = person.find("div", class_="s3v9rd")
+        if (not name): continue
+
+        print_ele(name, -1)
+        printed = True
+        movie_name = person.find("div", class_="tAd8D")
+        if (movie_name):
+            print(format_color(" <=> ", 2), end="")
+            print_ele(movie_name)
+        else: print("")
+
+        count -= 1
+        if (not count and not options["show_lists_info"]):
+            print(format_color("etc...", 2))
+            break
+    if (printed and not options["show_lists_info"]): print("")
+    return printed
+
+def check_for_translation(soup):
+    debug("searching for translations")
+    tranlation = soup.find(id="lrtl-translation-text")
+    if (tranlation): print_ele(tranlation)
+    else: return False
+    in_english = soup.find(id="lrtl-transliteration-text")
+    if (in_english): print_ele(in_english)
+    return True;
+
+def find_class(soup, class_name):
+    found = False
+    for match in soup.find_all("div", class_=class_name):
+        debug("found " + class_name)
+        print_ele(match)
+        if (class_name == "iBp4i"): return True
+        found = True
+    return found
+
+def print_search_query(soup):
+    search = soup.find(id="scl")
+    if (not search): return
+    print_ele(search, 2, "showing results for ")
+    print("")
+
+def website_brefs(soup, count): 
+    debug("finding website brefs")
+    for ele in soup.find_all("div", class_="fP1Qef"):
+        printed = False
+        print_ele(ele.find("div", "sCuL3"), 2, "from: ")
+
+        content = ele.find_all("div", class_="v9i61e")
+        if (content):
+            rating = ele.find("span", class_="oqSTJd")
+            if (rating):
+                printed = print_ele(rating)
+                if (len(content) > 1): print_ele(content[1])
+            else: printed = print_ele(content[0])
+        else: 
+            printed = print_ele(ele.find("div", class_="BNeawe"))
+
+        if (printed): count -= 1
+        if (count): print("")
+        else: return
+
+def fetch_html(query):
+    query = urlencode(query)
+
+    # look for cache
+    tmp_path = tmp_storage + query.lower() + ".html"
+    if (options["use_cache"]):
+        if (file_exists(tmp_storage)):
+            if (file_exists(tmp_path)):
+                with open(tmp_path, "r") as file:
+                    return file.read()
+        else: makedirs(tmp_storage)
+
+    html_data = ""
+    url = google_search_url + query
+    request = Request(url, headers=hdr)
+    try:
+        with urlopen(request) as response:
+            html_data = response.read().decode("utf8")
+            with open(tmp_path, "w") as file:
+                file.write(html_data)
+        return html_data
+    except Exception as err:
+        print(err)
+        error("Failed to fetch")
+
+def init():
+    debug("started omnicient")
+    global options
+    query = []
+    for arg in sys.argv:
+        if (arg[0] == '-'):
+            if (len(arg) == 1): error("invalid option")
+            char = arg[1]
+            if (char == 'r'): options["use_cache"] = False
+            elif (char == 'h'): show_help_message()
+            elif (char == 'q'): options["show_search_query"] = False
+            elif (char == 'l'): options["show_lists_info"] = True
+            elif (char == 'b'): options["show_website_brefs"] = False
+            elif (char == 'd'): options["show_debug_info"] = True
+            else: error("unknown option " + arg[1])
+        else: query.append(arg)
+
+    if (len(query) == 1):
+        print("Ask what you need to know")
+        show_help_message()
+    debug(" ".join(query[1:]))
+    search(" ".join(query[1:]))
+
+def format_color(text, code):
+    if (code == 0): return text
+    return colors[code] + text + colors[0]
+
+def print_ele(ele, code=0, prefix=False):
+    if (not ele): return False
+    if (prefix): print(format_color(prefix, code), end="")
+    if (code == -1): print(format_color(ele.text, 0), end="")
+    else: print(format_color(ele.text, code))
+    return True
+
+def error(msg):
+    print(format_color("[ERROR] ", 3) + msg)
+    exit(1)
+
+def show_help_message():
+    print("One who has answers to all your questions.")
+    print("(provided they are available on google.com)\n")
+    options = [
+            "r", "not to use cache",
+            "q", "not to show search query",
+            "b", "not to show website brefs",
+            "l", "show list info",
+            "d", "show debug info",
+            "h", "show this message"
+        ]
+    i = 0
+    while(i != len(options)):
+        print(f"\t-{options[i]}: {options[i+1]}")
+        i += 2
+    print("\nUsage: omnicient [OPTIONS] [QUERY]")
+    exit(1)
+
+init()

@@ -41,7 +41,7 @@ do
     case "${flag}" in
         n) nextLecture;;
         m) markLecture;;
-        o) xdg-open $(node $dir/frontend/index.js);;
+        o) google-chrome-stable $(node $dir/frontend/index.js);;
         c) openCode;;
     esac
 done
