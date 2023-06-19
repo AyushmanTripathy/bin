@@ -42,7 +42,7 @@ findSong(){
   $mocp_command -a $line
 }
 
-while getopts "s a: l: e p v: x n c d: f" flag
+while getopts "s a: l: e p v: x n b c d: f" flag
 do
     case "${flag}" in
         s) startServer;;
@@ -54,6 +54,7 @@ do
         v) $mocp_command -v ${OPTARG};;
         x) $mocp_command -x;;
         n) $mocp_command -f;;
+        b) $mocp_command -r;;
         c) $mocp_command -c;;
         d) music_db=${OPTARG};;
     esac

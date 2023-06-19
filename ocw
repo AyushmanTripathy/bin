@@ -10,7 +10,7 @@ nextLecture(){
   then
     notify-send "Course Complete!"
   else
-    echo "https://youtu.be/$lecture" | xclip -sel clipboard
+    $BROWSER "https://youtu.be/$lecture" 
   fi
 }
 
@@ -41,7 +41,7 @@ do
     case "${flag}" in
         n) nextLecture;;
         m) markLecture;;
-        o) google-chrome-stable $(node $dir/frontend/index.js);;
+        o) $BROWSER $(node $dir/frontend/index.js);;
         c) openCode;;
     esac
 done
