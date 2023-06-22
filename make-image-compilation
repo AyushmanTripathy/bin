@@ -1,0 +1,51 @@
+#!/bin/sh
+set -e
+
+tmp="/tmp/edit-video.txt"
+inputfile="input.txt"
+outputfile="output.mp4"
+framerate=25
+timeperimage=3
+
+add_inputs() {
+  for i in $(cat $inputfile)
+  do
+    echo "-loop 1 -t $timeperimage -i $i \\" >> $tmp
+  done
+}
+
+add_filter_complex() {
+  echo '-filter_complex "\' >> $tmp
+  inputcount=$(cat $inputfile | wc -l)
+  inputcount=$(( $inputcount - 1))
+
+  for i in $(seq 1 $inputcount)
+  do
+    echo "[$i]fade=d=1:t=in:alpha=1,setpts=PTS-STARTPTS+$(( $i * $timeperimage ))/TB[f$(( $i - 1))];\\" >> $tmp
+  done
+
+  printf '[0][f0]overlay[bg1];' >> $tmp
+  for i in $(seq 1 $((inputcount - 2)))
+  do
+    printf "[bg$i][f$i]overlay[bg$(( i + 1 ))];" >> $tmp
+  done
+  inputcount=$(( $inputcount - 1))
+  printf "[bg$inputcount][f$inputcount]overlay," >> $tmp
+  printf "format=yuv420p[v]\" -map \"[v]\" -r $framerate " >> $tmp
+}
+
+while getopts "i:o:t:" flag
+do
+    case "${flag}" in
+        i) inputfile="${OPTARG}";;
+        o) outputfile="${OPTARG}";;
+        t) timeperimage="${OPTARG}";;
+    esac
+done
+
+[ -f $tmp ] && rm $tmp
+echo "ffmpeg \\" >> $tmp
+add_inputs
+add_filter_complex
+echo $outputfile >> $tmp
+sh $tmp

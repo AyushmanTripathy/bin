@@ -1,0 +1,26 @@
+#!/bin/sh
+screenshot_file="$HOME/tmp/screenshot.jpg"
+screenrecord_file="$HOME/tmp/screen-record.webm"
+
+screen_record() {
+  slop=$(slop -f "%x %y %w %h %g %i") || exit 1
+  read -r X Y W H G ID <<< $slop
+  ffmpeg -f x11grab -s "$W"x"$H" -i :0.0+$X,$Y -t 3 $screenrecord_file
+}
+
+full_screen_shot() {
+  scrot -f ~/tmp/screenshot.jpg
+}
+
+while getopts "r f" flag
+do
+    case "${flag}" in
+        r) screen_record && exit;;
+        f) full_screen_shot && exit;;
+    esac
+done
+
+slop=$(slop -f "%x %y %w %h %g %i") || exit 1
+read -r X Y W H G ID <<< $slop
+notify-send "$X $Y $W $H"
+scrot -a "$X, $Y, $W, $H" -f $screenshot_file
