@@ -6,7 +6,8 @@ day=$(date "+%d")
 year=$(date "+%g")
 
 check_if_updated() {
-  [[ -f "$1" ]] && notify-send "Don't forget to make diary entry"
+  [[ -f "$1" ]] || /usr/bin/notify-send "Don't forget to make diary entry"
+  echo "from diary" >> ~/lol
 }
 
 ask() {
