@@ -1,3 +1,4 @@
 #!/bin/sh
 
-paplay $HOME/.local/share/sounds/notification.ogg
+location="$XDG_DATA_HOME/sounds"
+paplay "$location/$(ls $location | shuf -n 1)"

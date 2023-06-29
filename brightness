@@ -14,6 +14,7 @@ increment(){
   if [ $b -gt $max_brightness ]
   then
     notify-send "Max brightness"
+    exit 1
   else
     echo $b > $brightness_file
   fi
@@ -21,10 +22,16 @@ increment(){
 }
 
 decrement(){
+  if [ $b -eq 0 ]
+  then
+    notify-send "Min brightness"
+    exit 1
+  fi
+
   b=$(expr $b - $1)
   if [ $b -lt 0 ]
   then
-    notify-send "Min brightness"
+    echo '0' > $brightness_file
   else
     echo $b > $brightness_file
   fi 

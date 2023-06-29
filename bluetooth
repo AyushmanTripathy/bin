@@ -10,5 +10,5 @@ mac=$(echo $line | cut -d'|' -f1)
 name=$(echo $line | cut -d'|' -f2)
 
 bluetoothctl pair $mac && notify-send "Paired with $name" || notify-send "Paring failed with $name"
-bluetoothctl trust $mac 
+bluetoothctl trust $mac || notify-send "Cannot trust $name" "failed to trust $mac" 
 bluetoothctl connect $mac && notify-send "Connected with $name" || notify-send "Connection failed with $name"
