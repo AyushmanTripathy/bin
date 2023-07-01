@@ -2,10 +2,16 @@
 
 clipboard="$HOME/tmp/clipboard.txt"
 
+saveClip() {
+  echo "$(xclip -o)\n" >> $clipboard 
+  notify-send "save clipboard"
+  exit
+}
+
 while getopts "s" flag
 do
     case "${flag}" in
-        s) echo "$(xclip -o)\n" >> $clipboard && exit;;
+        s) saveClip;;
     esac
 done
 

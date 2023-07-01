@@ -1,7 +1,0 @@
-#! /bin/bash
-mocp -S
-mocp -c -a ~/chill.mp3 -p -t r -v 60
-clear
-cmatrix
-read -s -n 1 key
-mocp -x

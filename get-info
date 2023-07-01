@@ -1,16 +1,35 @@
 #!/bin/sh
 
 tmp_file="/tmp/tmp_info.txt"
-echo "bluetooth: $(get-bluetooth-device-info)" >> $tmp_file
-
+bluetooth_tmp_file="/tmp/bluetooth-deivce-info"
 wifi_tmp_file="/tmp/wifi_tmp_info.txt"
-nmcli device > $wifi_tmp_file
 
+echo "$USER @ $HOSTNAME" >> $tmp_file
+echo "----------------------------------------" >> $tmp_file
+
+# bluetooth 
+bluetoothctl info > $bluetooth_tmp_file
+name=$(cat $bluetooth_tmp_file | grep -e "Name" | cut -b 8-)
+
+printf "bluetooth: " >> $tmp_file
+if [[ -z "$name" ]]
+then
+ printf "🚫" >> $tmp_file
+else
+ battery=$(cat $bluetooth_tmp_file | grep -e "Battery Percentage" | grep -e "([0-9]*)" -o)
+ printf "$name $battery" >> $tmp_file
+fi
+printf "\n" >> $tmp_file
+
+# wifi
+nmcli device > $wifi_tmp_file
 echo "wifi: $(cat $wifi_tmp_file | grep -e "wifi" | awk '{ print $3" - "$4 }')" >> $tmp_file
 
+# disk usage
 printf "\ndisk usage:\n" >> $tmp_file
 df -h | grep -e "^/dev/" | cut -b 6- >> $tmp_file
 
+# mocp song
 mocp_command="mocp -M $XDG_CONFIG_HOME/moc"
 song_name=$($mocp_command -Q "%file")
 if [ ! -z "$song_name" ]
@@ -21,4 +40,5 @@ fi
 
 notify-send "$(cat $tmp_file)"
 rm $wifi_tmp_file
+rm $bluetooth_tmp_file
 rm $tmp_file
