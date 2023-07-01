@@ -2,7 +2,8 @@
 
 file="$HOME/private/wifi_passwords.txt"
 
-line=$(nmcli device wifi list | sed -n '1!p' | cut -b 9- | dmenu -p "Select Wifi: " -l 10)
+notify-send "Scanning for networks"
+line=$(nmcli device wifi list --rescan yes | sed -n '1!p' | cut -b 9- | dmenu -p "Select Wifi: " -l 10)
 BSSID=$(echo $line | cut -d' ' -f1)
 SSID=$(echo $line | cut -d' ' -f2)
 password=$(grep -e "$BSSID" $file)
@@ -15,4 +16,10 @@ else
   echo "$BSSID|$password" >> $file
 fi
 
-nmcli device wifi connect "$BSSID" password "$password" && notify-send "Connection Established with $SSID"
+nmcli device wifi connect "$BSSID" password "$password"
+if [ $? -eq 0 ]
+then
+  notify-send "Connection Established with $SSID"
+else 
+  notify-send "Failed to Connect with $BSSID" "Tried to connect with $SSID [password: $password]"
+fi

@@ -13,12 +13,12 @@ df -h | grep -e "^/dev/" | cut -b 6- >> $tmp_file
 
 mocp_command="mocp -M $XDG_CONFIG_HOME/moc"
 song_name=$($mocp_command -Q "%file")
-echo $song_name
-if [ $? -eq 0 ]
+if [ ! -z "$song_name" ]
 then
   printf "\ncurrenting playing: $($mocp_command -Q '(%ct/%tt)')\n" >> $tmp_file
   basename $song_name | sed -e "s/_/ /g" >> $tmp_file
 fi
 
 notify-send "$(cat $tmp_file)"
+rm $wifi_tmp_file
 rm $tmp_file

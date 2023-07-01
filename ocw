@@ -36,12 +36,17 @@ openCode() {
   unzip $(node $dir/frontend/index.js)
 }
 
+openPDF() {
+  loc=$(find $dir -type d -maxdepth 1 ! -path "*/frontend*" ! -path "*.git*"| dmenu -p "Choose Course: " -l 10)
+  $BROWSER $(node $dir/frontend/search.js $loc)
+}
+
 while getopts "n m o c" flag
 do
     case "${flag}" in
         n) nextLecture;;
         m) markLecture;;
-        o) $BROWSER $(node $dir/frontend/index.js);;
+        o) openPDF;;
         c) openCode;;
     esac
 done

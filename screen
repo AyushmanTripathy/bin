@@ -23,5 +23,4 @@ done
 
 slop=$(slop -f "%x %y %w %h %g %i") || exit 1
 read -r X Y W H G ID <<< $slop
-notify-send "$X $Y $W $H"
 scrot -a "$X, $Y, $W, $H" -f $screenshot_file
