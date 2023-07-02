@@ -1,24 +1,45 @@
 #!/bin/bash
-set -e
+getPartition() {
+  line=$(lsblk -o name,label,size | sed -n '1!p' | dmenu -p "Choose Partition: " -l 10)
+  usb_label="$(echo $line | awk '{ print $2 }')"
+  partition=$(echo $line | cut -d' ' -f1 | sed -e 's/─//g' -e 's/├//g' -e 's/└//g')
+}
+
+confirm() {
+  echo "$1"
+  printf "confirm? "
+  read null
+}
 
 mountUsb() {
-  partition=$(lsblk | sed -n '1!p' | dmenu -p "Choose Partition: " -l 10 | cut -b 7- | cut -d' ' -f1)
-  usb_label=$(file "/dev/$partition" -s | cut -d':' -f3 | sed -e 's/ *//g' -e 's/"//g')
+  getPartition
+
+  echo $partition $usb_label
+  [ -z "$partition" ] && echo "Empty Partition" && exit
+  [ -z "$usb_label" ] && echo "Empty USB Label" && exit
+
+  confirm "Mount $partition as $usb_label"
 
   mkdir -p "/media/$usb_label"
-  echo "$partition as $usb_label"
-  mount "/dev/$partition" "/media/$usb_label" 
+  mount "/dev/$partition" "/media/$usb_label" -o uid=ayush -o gid=ayush
   if [ $? -eq 0 ]
   then
-    echo "Mounted $usb_label" "mounted $partition as $usb_label"
+    echo "Mounted $partition as $usb_label"
   else
     echo "Mount Failed for $partition"
+    exit
   fi
 }
 
 dismount() {
   usb_label=$(ls /media/ | dmenu -p "Choose Label: " -l 10)
-  partition=$(findmnt -n -r -o SOURCE "/media/$usb_label")
+  partition=$(findmnt -n -r -o SOURCE "/media/$usb_label" | head -n 1)
+
+  [ -z "$partition" ] && echo "Empty Partition" && exit
+  [ -z "$usb_label" ] && echo "Empty USB Label" && exit
+
+  confirm "dismount partition $partition mounted as $usb_label"
+
   umount "$partition"
   if [ $? -eq 0 ]
   then
@@ -27,6 +48,7 @@ dismount() {
     echo "Unmount Failed for $usb_label"
     exit
   fi
+
   udisksctl power-off -b "$partition"
   if [ $? -eq 0 ]
   then
@@ -40,7 +62,10 @@ dismount() {
 }
 
 poweroff() {
-  partition=$(lsblk | sed -n '1!p' | dmenu -p "Choose Partition: " -l 10 | cut -b 7- | cut -d' ' -f1)
+  getPartition
+  [ -z "$partition" ] && echo "Empty Partition" && exit
+  confirm "Power off $partition"
+
   udisksctl power-off -b "$partition"
   if [ $? -eq 0 ]
   then
