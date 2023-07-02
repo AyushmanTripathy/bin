@@ -1,6 +1,6 @@
 #!/bin/bash
 getPartition() {
-  line=$(lsblk -o name,label,size | sed -n '1!p' | dmenu -p "Choose Partition: " -l 10)
+  line=$(lsblk -o name,label,size,mountpoint | sed -n '1!p' | dmenu -p "Choose Partition: " -l 10)
   usb_label="$(echo $line | awk '{ print $2 }')"
   partition=$(echo $line | cut -d' ' -f1 | sed -e 's/─//g' -e 's/├//g' -e 's/└//g')
 }
@@ -21,7 +21,7 @@ mountUsb() {
   confirm "Mount $partition as $usb_label"
 
   mkdir -p "/media/$usb_label"
-  mount "/dev/$partition" "/media/$usb_label" -o uid=ayush -o gid=ayush
+  mount "/dev/$partition" "/media/$usb_label" -o uid=$USERNAME -o gid=$USERNAME
   if [ $? -eq 0 ]
   then
     echo "Mounted $partition as $usb_label"
