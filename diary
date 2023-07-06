@@ -1,18 +1,30 @@
 #!/bin/sh
 
 db_location="$XDG_DATA_HOME/diary"
+tmp="/tmp/diary_entry.txt"
 month=$(date "+%m")
 day=$(date "+%d")
 year=$(date "+%g")
 
 check_if_updated() {
-  [[ -f "$1" ]] || /usr/bin/notify-send "Don't forget to make diary entry"
-  echo "from diary" >> ~/lol
+  if [ -f "$1" ] 
+  then
+    echo "Don't forget to make diary entry"
+  else
+    echo "Diary Entry already made!"
+  fi
+}
+
+ask_demenu() {
+  printf "$1: " >> "$4"
+  printf "$3" | dmenu -p "$2" -l 10 >> "$4"
 }
 
 ask() {
   printf "$1: " >> "$4"
-  printf "$3" | dmenu -p "$2" -l 10 >> "$4"
+  printf "$2"
+  read input
+  printf "$input" >> "$4"
 }
 
 push_to_git() {
@@ -23,20 +35,7 @@ push_to_git() {
   git push origin master
 }
 
-add_diary_entry() {
-  if [[ -f "$1" ]]
-  then
-      notify-send "Diary entry already made!"
-      return
-  fi
-
-  tmp="/tmp/diary_entry.txt"
-  date '+%b %d %G (%a) %I:%M%p' > $tmp
-  ask "Level" "How productive was your day? " "high\nmedium\nlow" $tmp
-  ask "Exercise" "Did you exercise? " "no\nfull\nlittle bit" $tmp
-  ask "Leanred" "What you learn today? " '' $tmp
-  ask "Descrition" "Any thoughts? " '' $tmp
-
+confirm_dmenu() {
   input=$(printf "no\nyes" | dmenu -p "Confirm Entry" -l 2)
   if [ "yes" = "$input" ] 
   then
@@ -47,8 +46,33 @@ add_diary_entry() {
   fi
 }
 
+cleanup() {
+  rm $tmp
+}
+
+add_diary_entry() {
+  if [ -f "$1" ]
+  then
+      echo "Diary entry already made!"
+      return
+  fi
+
+  date '+%b %d %G (%a) %I:%M%p' > $tmp
+  ask "Level" "How productive was your day? " "high\nmedium\nlow" $tmp
+  ask "Exercise" "Did you exercise? " "no\nfull\nlittle bit" $tmp
+  ask "Leanred" "What you learn today? " '' $tmp
+  ask "Descrition" "Any thoughts? " '' $tmp
+
+  trap cleanup EXIT
+  printf "confirm entry? "
+  read input
+  echo "end"
+  cp $tmp $1
+  push_to_git $2
+}
+
 month_location="$db_location/$year/$month"
-[[ -f "$month_location" ]] || mkdir -p $month_location
+[ -f "$month_location" ] || mkdir -p $month_location
 exact_location="$month_location/$day"
 
 while getopts "a c" flag
