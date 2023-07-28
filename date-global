@@ -1,0 +1,8 @@
+#!/bin/sh
+
+zone_info_pattern='\/usr\/share\/zoneinfo\/'
+region1=$(find /usr/share/zoneinfo -maxdepth 1 -type d | sed -e "s/$zone_info_pattern//" | fzf)
+region2=$(find /usr/share/zoneinfo/$region1 -maxdepth 1 -type f | sed -e "s/$zone_info_pattern$region1//" | fzf)
+
+echo "for $region1$region2"
+TZ="$region1$region2" date

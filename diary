@@ -9,9 +9,9 @@ year=$(date "+%g")
 check_if_updated() {
   if [ -f "$1" ] 
   then
-    echo "Don't forget to make diary entry"
-  else
     echo "Diary Entry already made!"
+  else
+    echo "Don't forget to make diary entry"
   fi
 }
 
@@ -24,7 +24,7 @@ ask() {
   printf "$1: " >> "$4"
   printf "$2"
   read input
-  printf "$input" >> "$4"
+  printf "$input\n" >> "$4"
 }
 
 push_to_git() {
