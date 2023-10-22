@@ -14,8 +14,12 @@ download_music (){
   read name
   name=${name// /_}
   
-  mkdir ~/download-tmp
-  cd ~/download-tmp
+  TMP_DOWNLOAD_LOCATION="/tmp/download-tmp"
+
+  [ -d $TMP_DOWNLOAD_LOCATION ] || mkdir $TMP_DOWNLOAD_LOCATION
+  [ -d "$TMP_DOWNLOAD_LOCATION/$name" ] || mkdir "$TMP_DOWNLOAD_LOCATION/$name"
+
+  cd "$TMP_DOWNLOAD_LOCATION/$name"
  
   #download
   yt-dlp -x -f worst --audio-format 'mp3' "$link"
@@ -29,12 +33,6 @@ download_music (){
   else
     echo "FAILED"
   fi
-  
-  rm -rf ~/download-tmp
 }
 
-if [[ $1 == '-m' ]]; then
-  echo "not completed the script"
-else
-  download_music
-fi
+download_music

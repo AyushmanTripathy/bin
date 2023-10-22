@@ -1,4 +1,4 @@
 #!/bin/sh
 
 echo "$1"
-nodemon -I -x "gcc $1 && ./a.out" -w "$1"
+nodemon -I -x "gcc $1 -lm && ./a.out" -w "$1"

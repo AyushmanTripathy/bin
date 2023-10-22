@@ -6,7 +6,7 @@ read startDuration
 echo 'end time'
 read endDuration
 
-ffmpeg -i $1 -ss $startDuration -t $endDuration -async 1 "swap.mp4"
+ffmpeg -copyts -i $1 -ss $startDuration -to $endDuration -c copy "swap.mp4"
 
 cp $1 $HOME/tmp/swap.mp4
 mv swap.mp4 $1
