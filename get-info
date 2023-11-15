@@ -22,12 +22,9 @@ fi
 printf "\n" >> $tmp_file
 
 # wifi
-nmcli device > $wifi_tmp_file
-echo "wifi: $(cat $wifi_tmp_file | grep -e "wifi" | awk '{ print $3" - "$4 }')" >> $tmp_file
-
-# disk usage
-printf "\ndisk usage:\n" >> $tmp_file
-df -h | grep -e "^/dev/" | cut -b 6- >> $tmp_file
+nmcli device | cut -b9- > $wifi_tmp_file
+echo $(cat $wifi_tmp_file | grep -e "wifi" | sed -e "s/--//g" -e "s/disconnected/🚫/" -e "s/connected/✔ /") >> $tmp_file
+echo $(cat $wifi_tmp_file | grep -e "ethernet" | sed -e "s/--//g") >> $tmp_file
 
 # mocp song
 mocp_command="mocp -M $XDG_CONFIG_HOME/moc"

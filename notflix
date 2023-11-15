@@ -5,7 +5,7 @@
 mkdir -p $HOME/.cache/notflix
 
 menu="fzf"
-baseurl="https://1337x.wtf"
+baseurl="https://1337x.unblockit.foo/"
 cachedir="$HOME/.cache/notflix"
 
 if [ -z $1 ]; then

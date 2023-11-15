@@ -21,7 +21,7 @@ mountUsb() {
   confirm "Mount $partition as $usb_label"
 
   mkdir -p "/media/$usb_label"
-  mount "/dev/$partition" "/media/$usb_label" -o uid=$USERNAME -o gid=$USERNAME
+  sudo mount "/dev/$partition" "/media/$usb_label" -o uid=$USER -o gid=$USER
   if [ $? -eq 0 ]
   then
     echo "Mounted $partition as $usb_label"
@@ -40,7 +40,7 @@ dismount() {
 
   confirm "dismount partition $partition mounted as $usb_label"
 
-  umount "$partition"
+  sudo umount "$partition"
   if [ $? -eq 0 ]
   then
     echo "Unmounted $usb_label"
@@ -49,7 +49,7 @@ dismount() {
     exit
   fi
 
-  udisksctl power-off -b "$partition"
+  sudo udisksctl power-off -b "$partition"
   if [ $? -eq 0 ]
   then
     rm -rf "/media/$usb_label"
@@ -66,7 +66,7 @@ poweroff() {
   [ -z "$partition" ] && echo "Empty Partition" && exit
   confirm "Power off $partition"
 
-  udisksctl power-off -b "$partition"
+  sudo udisksctl power-off -b "$partition"
   if [ $? -eq 0 ]
   then
     echo "Powered off $usb_label"
@@ -76,12 +76,6 @@ poweroff() {
     exit
   fi
 }
-
-if [ "$EUID" -ne 0 ]
-then 
-  echo "Please run usb as root"
-  exit
-fi
 
 while getopts "m e p" flag
 do

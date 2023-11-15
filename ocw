@@ -1,6 +1,6 @@
 #!/bin/sh
 
-dir="$HOME/ocw"
+dir="$XDG_DATA_HOME/ocw"
 
 nextLecture(){
   course=$(find $dir -maxdepth 1 -type f | grep -v -e "Readme.md" | sed -e "s/^.*\///" | sed -e "s/\.txt//g" | dmenu -p "Choose Course: " -l 10)
