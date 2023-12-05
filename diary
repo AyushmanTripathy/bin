@@ -9,13 +9,13 @@ year=$(date "+%g")
 check_if_updated() {
   if [ -f "$1" ] 
   then
-    echo "Diary Entry already made!"
+    notify-send "Don't forget to make diary entry"
   else
-    echo "Don't forget to make diary entry"
+    echo "Diary Entry already made!"
   fi
 }
 
-ask_demenu() {
+ask_dmenu() {
   printf "$1: " >> "$4"
   printf "$3" | dmenu -p "$2" -l 10 >> "$4"
 }
@@ -53,20 +53,18 @@ cleanup() {
 add_diary_entry() {
   if [ -f "$1" ]
   then
-      echo "Diary entry already made!"
+      notify-send "Diary entry already made!"
       return
   fi
 
   date '+%b %d %G (%a) %I:%M%p' > $tmp
-  ask "Level" "How productive was your day? " "high\nmedium\nlow" $tmp
-  ask "Exercise" "Did you exercise? " "no\nfull\nlittle bit" $tmp
-  ask "Leanred" "What you learn today? " '' $tmp
-  ask "Descrition" "Any thoughts? " '' $tmp
-
+  ask_dmenu "Level" "How productive was your day? " "high\nmedium\nlow" $tmp
+  ask_dmenu "Exercise" "Did you exercise? " "no\nfull\nlittle bit" $tmp
+  ask_dmenu "Leanred" "What you learn today? " '' $tmp
+  ask_dmenu "Descrition" "Any thoughts? " '' $tmp
+ 
   trap cleanup EXIT
-  printf "confirm entry? "
-  read input
-  echo "end"
+  confirm_dmenu
   cp $tmp $1
   push_to_git $2
 }

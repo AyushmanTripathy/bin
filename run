@@ -1,0 +1,10 @@
+#!/bin/sh
+
+ext=$(echo $1 | sed -e "s/.*\.//")
+
+case "$ext" in
+  "cpp") nodemon -w $1 -x "g++ $1 -o /tmp/a.out && /tmp/a.out";;
+  "c") nodemon -w $1 -x "gcc $1 -o /tmp/a.out && /tmp/a.out";;
+  "js") nodemon $1;;
+  "py") nodemon -w "$1" -x "python3 $1";;
+esac

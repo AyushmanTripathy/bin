@@ -1,0 +1,5 @@
+#!/bin/sh
+
+LOC="/tmp"
+pandoc "$1" --extract-media "$LOC/media" --to html -s -o "$LOC/docx.html" || exit
+$BROWSER "$LOC/docx.html"
