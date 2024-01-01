@@ -1,0 +1,4 @@
+#!/bin/sh
+
+cd $XDG_DATA_HOME/yt-local/
+./bin/python3 $XDG_DATA_HOME/yt-local/server.py

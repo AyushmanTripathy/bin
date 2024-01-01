@@ -1,4 +1,3 @@
 #!/bin/sh
 
-emoji=$(cat $XDG_DATA_HOME/emojis.txt | dmenu -p "Choose Emoji: " -l 10 | cut -f1)
-echo $emoji | xclip -sel clip; echo $emoji
+cat $XDG_DATA_HOME/emojis.txt | dmenu -p "Choose Emoji: " -l 10 | cut -f1 | xclip -sel clip

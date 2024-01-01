@@ -1,10 +1,18 @@
 #!/bin/sh
 
-clipboard="$HOME/tmp/clipboard.txt"
+clipsdir="/tmp/clipsdir"
+
+if [ ! -d $clipsdir ]; then
+  mkdir $clipsdir
+  echo "0" > "$clipsdir/id"
+fi
 
 saveClip() {
-  echo "$(xclip -o)\n" >> $clipboard 
-  notify-send "save clipboard"
+  expr "$(cat $clipsdir/id)" + 1 > "$clipsdir/id"
+  unique_id=$(cat $clipsdir/id)
+  time_id=$(date '+%H-%M-%S')
+  xclip -sel clipboard -o > "$clipsdir/$unique_id|  $time_id"
+  notify-send "saved clipboard as $unique_id"
   exit
 }
 
@@ -15,5 +23,6 @@ do
     esac
 done
 
-line=$(cat $clipboard | dmenu -p "Select: " -l 10)
-echo "$line" | sed -e 's/\\n//' | xclip -selection clipboard
+
+line=$(ls $clipsdir | sed -e "/id/d" | sort -r | dmenu -p "Select: " -l 10)
+cat "$clipsdir/$line" | xclip -selection clipboard
