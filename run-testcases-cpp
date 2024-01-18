@@ -1,0 +1,102 @@
+#!/bin/sh
+
+base_loc="/tmp/test_cases"
+exec_loc="/tmp/test_cases/out.out"
+
+red(){
+  printf "\033[91m$1\033[0m"
+}
+green(){
+  printf "\033[92m$1\033[0m"
+}
+error() {
+  red "[ERROR]"
+  echo " $1"
+  exit
+}
+
+read_input() {
+  while read line
+  do
+    # break if the line is empty
+    [ -z "$line" ] && break
+    echo "  $line" >> "$1"
+  done
+}
+
+add_test_case() {
+  counter=$(cat "$base_loc/counter")
+  loc="$base_loc/$counter"
+
+  mkdir -p "$loc"
+
+  echo "==== INPUT ===="
+  read_input "$loc/input.txt"
+  
+  echo "==== OUTPUT ===="
+  read_input "$loc/output.txt"
+
+  expr $counter \+ 1 > "$base_loc/counter"
+}
+
+init_test_cases() {
+  [ -d "$base_loc" ] && return
+  echo "init new test case"
+  mkdir -p "$base_loc"
+  echo "1" > "$base_loc/counter"
+}
+
+purge_test_cases() {
+  printf "are you sure? "
+  read null
+  rm -rf "$base_loc"
+}
+
+run_cpp_test_case() {
+  green "CASE #$3 "
+  if [ ! -f $exec_loc ] 
+  then
+    g++ $1 -o "$exec_loc" || error "compilation error"
+  fi
+
+  cat "$2/input.txt" | "$exec_loc" > "$base_loc/out"
+
+  if diff "$base_loc/out" "$2/output.txt" -white > /dev/null; then
+    green "[ passed ]\n"
+  else
+    red "[ failed ]\n"
+    pr -m -t "$base_loc/out" "$2/output.txt"
+    printf "\n"
+  fi
+
+  rm "$base_loc/out"
+}
+
+run_test_cases() {
+  counter=$(cat "$base_loc/counter")
+  if [ "$counter" -eq "1" ]
+  then
+    echo "no test cases"
+    return
+  fi
+
+  for i in $(seq $(expr $counter \- 1))
+  do
+    case "$(echo $1 | sed 's/.*\.//')" in
+      "cpp") run_cpp_test_case "$1" "$base_loc/$i" "$i";;
+    esac
+  done
+
+  rm $exec_loc
+}
+
+init_test_cases
+
+while getopts "a c r:" flag
+do
+    case "${flag}" in
+        r) run_test_cases ${OPTARG};;
+        a) add_test_case;;
+        c) purge_test_cases;;
+    esac
+done
