@@ -1,7 +1,7 @@
 #!/bin/sh
 
-base_loc="/tmp/test_cases"
-exec_loc="/tmp/test_cases/out.out"
+base_loc="$XDG_DATA_HOME/test_cases"
+exec_loc="/tmp/out.out"
 
 red(){
   printf "\033[91m$1\033[0m"
@@ -12,15 +12,17 @@ green(){
 error() {
   red "[ERROR]"
   echo " $1"
+  [ -f "$base_loc/out" ] && cat "$base_loc/out"t
   exit
 }
 
 read_input() {
+  rm -f $1
   while read line
   do
     # break if the line is empty
     [ -z "$line" ] && break
-    echo "  $line" >> "$1"
+    echo "$line" | sed -e 's/^\s*//g' -e 's/\s*$//g' >> "$1"
   done
 }
 
@@ -52,6 +54,37 @@ purge_test_cases() {
   rm -rf "$base_loc"
 }
 
+run_py_test_case() {
+  green "CASE #$3 "
+
+  cat "$2/input.txt" | python3 "$1" > "$base_loc/out" || error "runtime error"
+
+  if diff "$base_loc/out" "$2/output.txt" -white > /dev/null; then
+    green "[ passed ]\n"
+  else
+    red "[ failed ]\n"
+    pr -m -t "$base_loc/out" "$2/output.txt"
+    printf "\n"
+  fi
+
+  rm "$base_loc/out"
+}
+
+run_js_test_case() {
+  green "CASE #$3 "
+
+  cat "$2/input.txt" | node "$1" > "$base_loc/out" || error "runtime error"
+
+  if diff "$base_loc/out" "$2/output.txt" -white > /dev/null; then
+    green "[ passed ]\n"
+  else
+    red "[ failed ]\n"
+    pr -m -t "$base_loc/out" "$2/output.txt"
+    printf "\n"
+  fi
+
+  rm "$base_loc/out"
+}
 run_cpp_test_case() {
   green "CASE #$3 "
   if [ ! -f $exec_loc ] 
@@ -84,10 +117,12 @@ run_test_cases() {
   do
     case "$(echo $1 | sed 's/.*\.//')" in
       "cpp") run_cpp_test_case "$1" "$base_loc/$i" "$i";;
+      "py") run_py_test_case "$1" "$base_loc/$i" "$i";;
+      "js") run_js_test_case "$1" "$base_loc/$i" "$i";;
     esac
   done
 
-  rm $exec_loc
+  [ -f "$exec_loc" ] && rm $exec_loc
 }
 
 init_test_cases
