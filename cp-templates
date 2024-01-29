@@ -1,0 +1,9 @@
+#!/bin/sh
+
+base_loc="$XDG_DATA_HOME/cp-templates"
+
+cd "$base_loc"
+lang=$(ls | dmenu -l 10 -p "Choose Language: ")
+cd $lang
+template=$(ls | dmenu -l 10 -p "Choose Template: ")
+xclip -sel c "$base_loc/$lang/$template"
