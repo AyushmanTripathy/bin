@@ -10,9 +10,13 @@ green(){
   printf "\033[92m$1\033[0m"
 }
 error() {
+  if [ $? -eq "124" ]; then
+    error "Timelimit Exceeded"
+  fi
+
   red "[ERROR]"
   echo " $1"
-  [ -f "$base_loc/out" ] && cat "$base_loc/out"t
+  [ -f "$base_loc/out" ] && cat "$base_loc/out"
   exit
 }
 
@@ -39,6 +43,7 @@ add_test_case() {
   read_input "$loc/output.txt"
 
   expr $counter \+ 1 > "$base_loc/counter"
+  exit
 }
 
 init_test_cases() {
@@ -52,12 +57,29 @@ purge_test_cases() {
   printf "are you sure? "
   read null
   rm -rf "$base_loc"
+  exit
 }
 
+view_test_cases() {
+  counter=$(cat "$base_loc/counter")
+  if [ "$counter" -eq "1" ]
+  then
+    echo "no test cases"
+    return
+  fi
+
+  for i in $(seq $(expr $counter \- 1))
+  do
+    green "CASE $i\n"
+    pr -m -t "$base_loc/$i/input.txt" "$base_loc/$i/output.txt"
+  done
+
+
+}
 run_py_test_case() {
   green "CASE #$3 "
 
-  cat "$2/input.txt" | python3 "$1" > "$base_loc/out" || error "runtime error"
+  cat "$2/input.txt" | timeout 3s python3 "$1" > "$base_loc/out" || error "runtime error"
 
   if diff "$base_loc/out" "$2/output.txt" -white > /dev/null; then
     green "[ passed ]\n"
@@ -73,7 +95,7 @@ run_py_test_case() {
 run_js_test_case() {
   green "CASE #$3 "
 
-  cat "$2/input.txt" | node "$1" > "$base_loc/out" || error "runtime error"
+  cat "$2/input.txt" | timeout 2s node "$1" > "$base_loc/out" || error "runtime error"
 
   if diff "$base_loc/out" "$2/output.txt" -white > /dev/null; then
     green "[ passed ]\n"
@@ -92,7 +114,7 @@ run_cpp_test_case() {
     g++ $1 -o "$exec_loc" || error "compilation error"
   fi
 
-  cat "$2/input.txt" | "$exec_loc" > "$base_loc/out"
+  cat "$2/input.txt" | timeout 1s "$exec_loc" > "$base_loc/out" || error "runtime error"
 
   if diff "$base_loc/out" "$2/output.txt" -white > /dev/null; then
     green "[ passed ]\n"
@@ -119,6 +141,7 @@ run_test_cases() {
       "cpp") run_cpp_test_case "$1" "$base_loc/$i" "$i";;
       "py") run_py_test_case "$1" "$base_loc/$i" "$i";;
       "js") run_js_test_case "$1" "$base_loc/$i" "$i";;
+      *) error "extension not matched";;
     esac
   done
 
@@ -126,12 +149,15 @@ run_test_cases() {
 }
 
 init_test_cases
+[ -f "$base_loc/out" ] && rm "$base_loc/out"
 
-while getopts "a c r:" flag
+while getopts "a c v" flag
 do
     case "${flag}" in
-        r) run_test_cases ${OPTARG};;
         a) add_test_case;;
         c) purge_test_cases;;
+        v) view_test_cases;;
     esac
 done
+
+run_test_cases $1

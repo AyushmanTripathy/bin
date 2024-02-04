@@ -43,9 +43,24 @@ do
     esac
 done
 
+error() {
+  printf "[ERROR] $1"
+  exit
+}
 [ -f $tmp ] && rm $tmp
+
+[ -f $inputfile ] || error "input file $inputfile doesn't exists"
+[ -f $outputfile ] && error "output file $outputfile already exists"
+
 echo "ffmpeg \\" >> $tmp
 add_inputs
 add_filter_complex
 echo $outputfile >> $tmp
+
 sh $tmp
+
+if [ "$?" -eq 0 ]; then
+  echo "Generated $outputfile"
+else 
+  echo "Failed to Generate"
+fi

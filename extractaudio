@@ -1,5 +1,14 @@
 #!/bin/sh
-ffmpeg -i $1 -q:a 0 -map a /tmp/swap.mp3
 
-cp $1 $HOME/tmp/swap.mp4
-mv /tmp/swap.mp3 $1
+error() {
+  echo "[ERROR] $1"
+  exit
+}
+
+[ -f "./output.mp3" ] && error "output.mp3 already exits"
+
+echo "Defaulting to 0th stream, use -s"
+
+ffmpeg -i $1 -q:a 0 -map a ./output.mp3
+
+echo "Generated ./output.mp3"

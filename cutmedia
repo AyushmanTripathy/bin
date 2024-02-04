@@ -1,0 +1,18 @@
+#!/bin/sh
+
+echo "target is $1"
+printf 'start time in MM:SS> '
+read startDuration
+
+printf 'end time in MM:SS> '
+read endDuration
+
+output_file="./output.$(echo $1 | sed 's/.*\.//')"
+
+ffmpeg -copyts -i $1 -ss $startDuration -to $endDuration -c copy $output_file
+
+if [ "$?" -eq 0 ]; then
+  echo "Generated $output_file"
+else
+  echo "Generation of $output_file failed"
+fi
