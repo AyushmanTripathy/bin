@@ -1,5 +1,6 @@
 #!/bin/sh
 
-LOC="/tmp"
+LOC="/tmp/$(uuidgen | cut -f2 -d-)"
+mkdir -p $LOC
 pandoc "$1" --extract-media "$LOC/media" --to html -s -o "$LOC/docx.html" || exit
 $BROWSER "$LOC/docx.html"
