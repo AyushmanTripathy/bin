@@ -1,66 +1,13 @@
-#!/bin/sh
-set -e
+#!/bin/bash
 
-tmp="/tmp/edit-video.txt"
-inputfile="input.txt"
-outputfile="output.mp4"
-framerate=25
-timeperimage=3
+[ ! -f pics.txt ] && echo "pics.txt required"
 
-add_inputs() {
-  for i in $(cat $inputfile)
-  do
-    echo "-loop 1 -t $timeperimage -i $i \\" >> $tmp
-  done
-}
+# pics.txt
+# file "name.jpg"
+# duration 1
 
-add_filter_complex() {
-  echo '-filter_complex "\' >> $tmp
-  inputcount=$(cat $inputfile | wc -l)
-  inputcount=$(( $inputcount - 1))
+# matching song
 
-  for i in $(seq 1 $inputcount)
-  do
-    echo "[$i]fade=d=1:t=in:alpha=1,setpts=PTS-STARTPTS+$(( $i * $timeperimage ))/TB[f$(( $i - 1))];\\" >> $tmp
-  done
+[ ! -f music.ogg ] && echo "music.ogg required"
 
-  printf '[0][f0]overlay[bg1];' >> $tmp
-  for i in $(seq 1 $((inputcount - 2)))
-  do
-    printf "[bg$i][f$i]overlay[bg$(( i + 1 ))];" >> $tmp
-  done
-  inputcount=$(( $inputcount - 1))
-  printf "[bg$inputcount][f$inputcount]overlay," >> $tmp
-  printf "format=yuv420p[v]\" -map \"[v]\" -r $framerate " >> $tmp
-}
-
-while getopts "i:o:t:" flag
-do
-    case "${flag}" in
-        i) inputfile="${OPTARG}";;
-        o) outputfile="${OPTARG}";;
-        t) timeperimage="${OPTARG}";;
-    esac
-done
-
-error() {
-  printf "[ERROR] $1"
-  exit
-}
-[ -f $tmp ] && rm $tmp
-
-[ -f $inputfile ] || error "input file $inputfile doesn't exists"
-[ -f $outputfile ] && error "output file $outputfile already exists"
-
-echo "ffmpeg \\" >> $tmp
-add_inputs
-add_filter_complex
-echo $outputfile >> $tmp
-
-sh $tmp
-
-if [ "$?" -eq 0 ]; then
-  echo "Generated $outputfile"
-else 
-  echo "Failed to Generate"
-fi
+ffmpeg -f concat -safe 0 -i pics.txt -i music.ogg -vf "scale=min(iw\,1920):min(ih\,1080):force_original_aspect_ratio=decrease,pad=1920:1080:(1920-iw)/2:(1080-ih)/2:black" -c:v libx264 -crf 18 -r 30 -shortest -y ./out.mp4
