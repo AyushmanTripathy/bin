@@ -1,0 +1,5 @@
+#!/bin/sh
+
+location="$XDG_DATA_HOME/help"
+subject="$(ls -1 $location | sed -e 's/.txt//' | dmenu -l 30).txt"
+cat "$location/$subject" | dmenu -l 40
