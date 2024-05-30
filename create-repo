@@ -3,10 +3,6 @@ name=$(basename $1)
 printf "create repo $name?"
 read NULL
 
-echo "### creating ###" >> $HOME/.git-log
-echo "name = $name" >> $HOME/.git-log
-echo '' >> $HOME/.git-log
-
 curl -X POST \
   -H "Authorization: token $(cat ~/private/.pat/$GITHUB_USERNAME)" \
   -H 'Content-Type: application/x-www-form-urlencoded' \

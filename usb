@@ -40,7 +40,10 @@ dismount() {
 
   confirm "dismount partition $partition mounted as $usb_label"
 
+  fuser -ickv "/media/$usb_label"
+  echo "unmounting $partition partition"
   sudo umount "$partition"
+
   if [ $? -eq 0 ]
   then
     echo "Unmounted $usb_label"
