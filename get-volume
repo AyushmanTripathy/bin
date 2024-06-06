@@ -1,3 +1,0 @@
-#!/bin/sh
-
-echo "V-$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | cut -d. -f2)%"

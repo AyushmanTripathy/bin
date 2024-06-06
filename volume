@@ -1,0 +1,16 @@
+#!/bin/sh
+
+update() {
+  pkill -RTMIN+10 dwmblocks
+}
+
+while getopts "m i d g" flag
+do
+    case "${flag}" in
+        i) pulsemixer --max-volume 100 --change-volume +5 && update;;
+        d) pulsemixer --max-volume 100 --change-volume -5 && update;;
+        m) pulsemixer --toggle-mute && update;;
+        g) echo "V-$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | cut -d. -f2)";;
+    esac
+done
+
