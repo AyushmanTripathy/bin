@@ -4,6 +4,8 @@ update() {
   pkill -RTMIN+10 dwmblocks
 }
 
+notify-send "press $BLOCK_BUTTON $BUTTON"
+
 while getopts "m i d g" flag
 do
     case "${flag}" in

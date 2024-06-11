@@ -2,13 +2,20 @@
 set -e
 
 bluetoothctl power on
-notify-send "scanning for bluetooth devices"
-bluetoothctl --timeout 3 scan on
+notify-send "scanning for bluetooth devices" -t 2000
+bluetoothctl --timeout 2 scan on
 
-line=$(bluetoothctl devices | cut -b 8- | sed -e "s/ /|/" | dmenu -p "Choose Device: " -l 10)
+line=$(bluetoothctl devices | cut -b 8- | sed -e "s/ /|/" | (echo "turn off"; cat -) | dmenu -p "Choose Device: " -l 10)
+
+if [ "turn off" = "$line" ]
+then
+  bluetoothctl power off && notify-send "Bluetooth powered off" || notify-send "power off failed"
+  exit
+fi
+
 mac=$(echo $line | cut -d'|' -f1)
 name=$(echo $line | cut -d'|' -f2)
 
-bluetoothctl pair $mac && notify-send "Paired with $name" || notify-send "Paring failed with $name"
+bluetoothctl pair $mac || notify-send "Paring failed with $name"
 bluetoothctl trust $mac || notify-send "Cannot trust $name" "failed to trust $mac" 
 bluetoothctl connect $mac && notify-send "Connected with $name" || notify-send "Connection failed with $name"
