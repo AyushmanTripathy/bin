@@ -73,8 +73,7 @@ view_test_cases() {
     green "CASE $i\n"
     pr -m -t "$base_loc/$i/input.txt" "$base_loc/$i/output.txt"
   done
-
-
+  exit
 }
 run_py_test_case() {
   green "CASE #$3 "
