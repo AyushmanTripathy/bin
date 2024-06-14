@@ -3,21 +3,40 @@
 file="$HOME/private/wifi_passwords.txt"
 
 notify-send "Scanning for networks"
-SSID=$(nmcli -f SSID device wifi list --rescan yes | sed -n '1!p' | dmenu -p "Select Wifi: " -l 10 | sed 's/\s*$//')
-password=$(grep -e "$SSID" $file)
+SSID=$(nmcli -f SSID device wifi list --rescan yes | sed -n '1!p' | (cat -; printf "disconnect\npower on\n") | dmenu -p "Select Wifi: " -l 10 | sed 's/\s*$//')
 
-if [[ ! -z "$password" ]]
-then
-  password=$(echo $password | cut -d'|' -f2)
-else
-  password=$(echo '' | dmenu -p "Enter Password: ")
-  echo "$SSID|$password" >> $file
+if [ "$SSID" = "disconnect" ]; then
+  if nmcli device down wlo1
+  then 
+    notify-send "Wifi disconnected" 
+  else 
+    notify-send "Disconnect failed" "$(nmcli device status | grep "wifi")"
+  fi
+  exit
 fi
 
-echo "$SSID $password"
-nmcli device wifi connect "$SSID" password "$password"
-if [ $? -eq 0 ]
+if [ "$SSID" = "power on" ] 
 then
+  if nmcli radio wifi on 
+  then 
+    notify-send "Wifi turned on" 
+  else 
+    notify-send "Failed to turn on wifi"
+  fi
+  exit
+fi
+
+password=$(grep -e "$SSID" "$file")
+
+if [ -n "$password" ]; then
+  password=$(echo "$password" | cut -d'|' -f2)
+else
+  password=$(echo '' | dmenu -p "Enter Password: ")
+  echo "$SSID|$password" >> "$file"
+fi
+
+if nmcli device wifi connect "$SSID" password "$password"
+then 
   notify-send "Connected with $SSID"
 else 
   notify-send "Failed to Connect with $SSID" "password: $password"
