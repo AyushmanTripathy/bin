@@ -5,13 +5,13 @@ musicDB="$MUSICDB"
 #download music from yt
 download_music (){
   printf "youtube link> "
-  read link
-  lang=$(find $musicDB -type d -printf '%f\n'| fzf)
-  class=$(find $musicDB -maxdepth 1 -type f -printf '%f\n'| fzf)
+  read -r link
+  lang=$(find "$musicDB" -type d -printf '%f\n'| fzf)
+  class=$(find "$musicDB" -maxdepth 1 -type f -printf '%f\n'| fzf)
   echo "language : $lang"
   echo "class : $class"
   printf 'Name Of Song> '
-  read name
+  read -r name
   name=${name// /_}
   
   TMP_DOWNLOAD_LOCATION="/tmp/download-tmp"
@@ -19,7 +19,7 @@ download_music (){
   [ -d $TMP_DOWNLOAD_LOCATION ] || mkdir $TMP_DOWNLOAD_LOCATION
   [ -d "$TMP_DOWNLOAD_LOCATION/$name" ] || mkdir "$TMP_DOWNLOAD_LOCATION/$name"
 
-  cd "$TMP_DOWNLOAD_LOCATION/$name"
+  cd "$TMP_DOWNLOAD_LOCATION/$name" || exit
  
   #download
   yt-dlp -x -f worst --audio-format 'mp3' "$link"
