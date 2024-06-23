@@ -1,3 +1,10 @@
 #!/bin/sh
 
-$BROWSER $XDG_DATA_HOME/revisor.html
+set -e
+
+cd "$HOME/notes" || printf "cannot find notes dir"
+cd "$(find . -maxdepth 1 -mindepth 1 -type d | cut -b 3- | fzf)"
+for note in *
+do
+  nvim -R "$note"
+done

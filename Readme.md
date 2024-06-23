@@ -8,8 +8,7 @@ scripts, fill the gap.
 
 If you like to know more about my Setup, [My Dearest Dotfiles](https://github.com/ayushmantripathy/dots)
 
-Here are some of the scripts, 
-
+Here are some of the scripts,
 
 ### runtests
 
@@ -18,7 +17,7 @@ in handy while doing Competative Programming.
 
 ### ytp
 
-play songs from youtube playlists in the background, without frying my CPU.
+Play songs from youtube playlists in the background, without frying my CPU.
 
 ### docx
 
@@ -54,6 +53,10 @@ languge.
 
 This script download songs from youtube, extracts audio and stores them
 organised in a format which i use.
+
+### revisor
+
+helps me revisor my [notes](https://github.com/ayushmantripathy/notes)
 
 ### screen
 
@@ -92,3 +95,4 @@ scripts i wrote for audio, video processing
 | ------------ | ------------------------------ |
 | extractaudio | extract audio from video files |
 | cutmedia     | crop audio, video files        |
+| replaceaudio | replace audio stream           |
