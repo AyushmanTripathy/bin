@@ -10,15 +10,24 @@ If you like to know more about my Setup, [My Dearest Dotfiles](https://github.co
 
 Here are some of the scripts, 
 
+
 ### runtests
 
 Runs multiple testcases for me, dectects filetype and can handle `TLE`s. Comes
 in handy while doing Competative Programming.
 
+### ytp
+
+play songs from youtube playlists in the background, without frying my CPU.
+
 ### docx
 
 I dont have any app to diplay docx format, so i compile them to HTML using
 `pandoc` and view them instead.
+
+### make-image-compilation
+
+ffmpeg script used for making compilation video from images
 
 ### emoji
 

@@ -1,0 +1,85 @@
+#!/bin/sh
+
+DIR="$XDG_DATA_HOME/ytp"
+
+[ -d "$DIR" ] || mkdir -p "$DIR"
+
+error() {
+  printf "\033[91m\[ERROR\]\033[0m %s\n" "$1"
+  exit
+}
+
+reset_playlist() {
+  selected_playlist=$(find . -maxdepth 1 -mindepth 1 -type d | fzf)
+  cd "$DIR/$selected_playlist" || error "cd error"
+  rm -r downloading playing current_id.txt
+}
+
+play_playlist() {
+  cd "$DIR" || error "$DIR not found"
+  selected_playlist=$(find . -maxdepth 1 -mindepth 1 -type d | fzf)
+  cd "$selected_playlist" || error "invalid playlist $selected_playlist"
+
+  if [ ! -f "./current_id.txt" ]; then
+    echo "1" > ./current_id.txt
+    mkdir downloading playing played
+  fi
+
+  while true
+  do
+    [ -n "$(ls downloading)" ] && rm downloading/*
+
+    song_no=$(cat current_id.txt)
+    song_id=$(head "-$song_no" < ids.txt | tail -1)
+
+    clear
+    printf "YTP\n---\nplaying: $selected_playlist\n"
+    echo "Playing song no $song_no"
+
+    # checking for cache
+    file_name=$(ls played | grep -e "$song_id")
+    if [ -n "$file_name" ]; then
+      echo "Using Cached $file_name"
+      mv "played/$file_name" playing/
+    else
+      yt-dlp -f wa "$song_id" -o "./downloading/%(title)s_[%(id)s].%(ext)s" && mv downloading/* playing/
+    fi
+
+    if [ -n "$(ls playing)" ]; then
+      mpv playing/* 
+      mv playing/* played/
+    fi
+
+    echo "$(( song_no + 1 ))" > current_id.txt
+  done
+}
+
+add_playlist() {
+  printf "Enter playlist id> "
+  read -r playlist_id
+  printf "Enter playlist name> "
+  read -r playlist_name
+
+  playlist_name=$(echo "$playlist_name" | sed -e "s/\s/_/g")
+
+  mkdir -p "$DIR/$playlist_name"
+  cd "$DIR/$playlist_name" || error "cd error"
+
+  echo "Getting video ids ..."
+  yt-dlp --flat-playlist --print id "$playlist_id" > ids.txt
+  echo "Got $(wc -l < ids.txt) ids"
+
+  echo "$playlist_name |$playlist_id" > "$DIR/playlists.txt"
+  echo "Added $playlist_name with id $playlist_id"
+}
+
+
+while getopts "r a p" flag
+do
+  case "${flag}" in
+    r) reset_playlist;;
+    p) play_playlist;;
+    a) add_playlist;;
+    *) error "invalid flag $flag";;
+  esac
+done
