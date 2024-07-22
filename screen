@@ -1,22 +1,44 @@
 #!/bin/sh
 screenshot_file="$HOME/pics/screenshots/screenshot.jpg"
-screenrecord_file="$HOME/tmp/screen-record.webm"
+screenrecord_file="$HOME/pics/recording.mp4"
 
 screen_record() {
-  [ -f $screenrecord_file ] && rm $screenrecord_file
-  slop=$(slop -f "%x %y %w %h %g %i") || exit 1
-  read -r X Y W H G ID <<< $slop
-  ffmpeg -f x11grab -s "$W"x"$H" -i :0.0+$X,$Y -t $1 $screenrecord_file
+  [ -f "$screenrecord_file" ] && rm "$screenrecord_file"
+  slop=$(slop -k -f "%x %y %w %h") || exit 1
+  read -r X Y W H <<< $slop
+  
+  # because of that pix_fmt
+  W=$(( W / 2 * 2 ))
+  H=$(( H / 2 * 2 ))
+  cmd="ffmpeg -f x11grab -s ${W}x${H} -i :0.0+$X,$Y "
+
+  printf "record audio from default? [y/n] "
+  read -r to_record_audio
+
+  if [ "$to_record_audio" = "y" ]; then
+    cmd="$cmd -f alsa -i default "
+  fi
+
+  printf "use low frame rate i.e. 15? [y/n] "
+  read -r to_reduce_framerate
+
+  if [ "$to_reduce_framerate" = "y" ]; then
+    cmd="$cmd -r 15 "
+  fi
+
+  echo "$cmd"
+  # for andorid support
+  $cmd -pix_fmt yuv420p $screenrecord_file
 }
 
 full_screen_shot() {
   scrot -f $screenshot_file
 }
 
-while getopts "r:f" flag
+while getopts "r f" flag
 do
     case "${flag}" in
-        r) screen_record "${OPTARG}" && exit;;
+        r) screen_record && exit;;
         f) full_screen_shot && exit;;
     esac
 done

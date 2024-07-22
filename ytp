@@ -10,8 +10,9 @@ error() {
 }
 
 reset_playlist() {
+  cd "$DIR"
   selected_playlist=$(find . -maxdepth 1 -mindepth 1 -type d | fzf)
-  cd "$DIR/$selected_playlist" || error "cd error"
+  cd "$selected_playlist" || error "cd error"
   rm -r downloading playing current_id.txt
 }
 

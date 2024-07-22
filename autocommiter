@@ -1,4 +1,4 @@
-#/bin/sh
+#!/bin/sh
 
 LIMIT="10"
 DATE=$(date +%D)
