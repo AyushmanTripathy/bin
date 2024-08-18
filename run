@@ -3,9 +3,10 @@
 ext=$(echo $1 | sed -e "s/.*\.//")
 
 case "$ext" in
-  "cpp") nodemon -w $1 -x "g++ $2 $1 -o /tmp/a.out && /tmp/a.out";;
-  "c") nodemon -w $1 -x "gcc $2 $1 -o /tmp/a.out && /tmp/a.out";;
+  "cpp") nodemon -w $1 -x "g++ $2 $1 -o /tmp/a.out && /tmp/a.out $3";;
+  "c") nodemon -w $1 -x "gcc $2 $1 -o /tmp/a.out && /tmp/a.out $3";;
+  "java") nodemon -w $1 -x "javac $1 && java Main $2 && rm *.class";;
   "js") nodemon $1;;
-  "py") nodemon -w "$1" -x "python3 $2 $1";;
+  "py") nodemon -w "$1" -x "python3 $2 $1 $3";;
   *) echo "[ERROR] unknown extension" && exit;;
 esac
