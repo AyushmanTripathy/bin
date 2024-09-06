@@ -5,18 +5,17 @@
 # duration 1
 
 file_error() {
-  echo "pics.txt not found"
-  echo "Format is"
+  echo "Format for pics.txt"
   echo 'file name.jpg'
   echo 'duration 1'
   exit
 }
 
-[ ! -f pics.txt ] && echo "pics.txt required"
-
-# matching song
-
-[ ! -f music.ogg ] && echo "music.ogg required" && exit
+if [ $# -lt 2 ];
+then
+  echo "Usage <command> pics.txt music.mp4"
+  file_error
+fi
 
 # landscape
 

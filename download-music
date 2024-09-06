@@ -22,7 +22,7 @@ download_music (){
   cd "$TMP_DOWNLOAD_LOCATION/$name" || exit
  
   #download
-  yt-dlp -f wa --audio-format 'mp3' "$link"
+  yt-dlp -x --audio-format 'mp3' "$link"
 
   if [ $? -eq 0 ]; then
     # move from  temp dir

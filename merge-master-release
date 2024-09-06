@@ -1,5 +1,5 @@
 #!/bin/sh
-name=$(basename $1)
+name=$(basename "$1")
 
 echo "repo name is '$name'"
 printf "Name of base branch? (release) "
@@ -10,13 +10,18 @@ printf "Commit Message> "
 read -r commit_msg
 
 echo "merging $head_branch --> $base_branch in $name"
+printf "confirm? "
 read null
 
 curl \
   -X POST \
-  -u "$GITHUB_USERNAME":$(cat ~/private/.pat/$GITHUB_USERNAME) \
+  -u "$GITHUB_USERNAME":$(cat "$HOME/private/.pat/$GITHUB_USERNAME") \
   -H "Accept: application/vnd.github.v3+json" \
   "https://api.github.com/repos/$GITHUB_USERNAME/$name/merges" \
   -d "{\"base\":\"$base_branch\",\"head\":\"$head_branch\", \"commit_message\": \"$commit_msg\"}"
 
-if [[  ]]
+if [ $? = "0" ]; then
+  echo "Merge sucessfully"
+else
+  echo "Merge Failed!!!!"
+fi
