@@ -1,3 +1,12 @@
 #!/bin/sh
 
-curl -F "file=@$1" 0x0.st | xclip -sel c
+file="/tmp/0x0.txt"
+
+if [ -f "$1" ]
+then
+  file="$1"
+else
+  echo "$1" > "$file" 
+fi
+
+curl -F "file=@$file" 0x0.st | xclip -sel c

@@ -1,6 +1,6 @@
 #!/bin/sh
 
 rm /tmp/1.ts /tmp/2.ts
-ffmpeg -i "$1" /tmp/1.ts
-ffmpeg -i "$2" /tmp/2.ts
+ffmpeg -i "$1" -c copy -bsf:v h264_mp4toannexb -f mpegts /tmp/1.ts
+ffmpeg -i "$2" -c copy -bsf:v h264_mp4toannexb -f mpegts /tmp/2.ts
 ffmpeg -i "concat:/tmp/1.ts|/tmp/2.ts" -bsf:a aac_adtstoasc output.mp4
