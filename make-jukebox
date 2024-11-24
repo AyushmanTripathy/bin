@@ -1,5 +1,6 @@
 #!/bin/sh
 
+timestamp="../timestamps.txt"
 vids_names="vids.txt"
 
 echo "background image: $2"
@@ -8,11 +9,21 @@ printf "continue? "
 read -r null
 
 cd "$1" || exit
+
+time="00:00"
+rm $timestamp
+for i in *
+do
+  echo "$time $i" | sed -e "s/_/ /g" -e "s/\..*$//" >> $timestamp
+  time=$(ffprobe -i $i -show_entries format=duration -v quiet -of csv="p=0" -sexagesimal | sed -e 's/\..*$//')
+done
+
 rm songs.txt
 for i in * 
 do
   echo "file $i" >> songs.txt
 done
+$EDITOR songs.txt
 ffmpeg -f concat -i songs.txt -c copy ../audio.mp3
 rm songs.txt
 cd ..
@@ -26,7 +37,7 @@ do
   echo "file clip.mp4" >> $vids_names
 done
 
-ffmpeg -loop 1 -i $2 -t 10 -pix_fmt yuv420p -vf scale=900:1600 clip.mp4
+ffmpeg -loop 1 -i $2 -t 10 -pix_fmt yuv420p -vf scale=1080:1920 clip.mp4
 
 for i in $(seq $count)
 do
