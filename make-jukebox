@@ -1,0 +1,42 @@
+#!/bin/sh
+
+vids_names="vids.txt"
+
+echo "background image: $2"
+echo "songs directory: $1"
+printf "continue? "
+read -r null
+
+cd "$1" || exit
+rm songs.txt
+for i in * 
+do
+  echo "file $i" >> songs.txt
+done
+ffmpeg -f concat -i songs.txt -c copy ../audio.mp3
+rm songs.txt
+cd ..
+
+duration=$(ffprobe -i audio.mp3 -show_entries format=duration -v quiet -of csv="p=0")
+count=$(echo "console.log(Math.ceil(Math.log10($duration)) - 1)" | node)
+
+echo "file clip.mp4" > $vids_names 
+for i in $(seq 9)
+do
+  echo "file clip.mp4" >> $vids_names
+done
+
+ffmpeg -loop 1 -i $2 -t 10 -pix_fmt yuv420p -vf scale=900:1600 clip.mp4
+
+for i in $(seq $count)
+do
+  ffmpeg -f concat -i vids.txt -c copy tmp.mp4
+  mv tmp.mp4 clip.mp4
+done
+
+rm $vids_names
+
+ffmpeg -i clip.mp4 -i audio.mp3 -map 0:v -map 1:a -c copy -shortest final.mp4
+
+rm clip.mp4
+rm audio.mp3

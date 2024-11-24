@@ -1,5 +1,8 @@
 #!/bin/sh
 
+git status
+printf "continue> "
+read null
 
 printf "Commit message> "
 read message
