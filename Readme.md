@@ -10,14 +10,18 @@ If you like to know more about my Setup, [My Dearest Dotfiles](https://github.co
 
 Here are some of the scripts,
 
+### make-jukebox
+
+Makes jukebox videos, with timestamps etc.
+
 ### runtests
 
 Runs multiple testcases for me, dectects filetype and can handle `TLE`s. Comes
-in handy while doing Competative Programming.
+in handy while doing competative programming contests.
 
 ### ytp
 
-Play songs from youtube playlists in the background, without frying my CPU.
+to play songs from youtube playlists in the background, without frying my CPU.
 
 ### docx
 

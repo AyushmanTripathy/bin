@@ -1,36 +1,47 @@
 #!/bin/sh
 
 timestamp="../timestamps.txt"
-vids_names="vids.txt"
 
 echo "background image: $2"
 echo "songs directory: $1"
-printf "continue? "
-read -r null
 
 cd "$1" || exit
 
-time="00:00"
-rm $timestamp
+rm songs.txt
 for i in *
 do
-  echo "$time $i" | sed -e "s/_/ /g" -e "s/\..*$//" >> $timestamp
-  time=$(ffprobe -i $i -show_entries format=duration -v quiet -of csv="p=0" -sexagesimal | sed -e 's/\..*$//')
-done
-
-rm songs.txt
-for i in * 
-do
-  echo "file $i" >> songs.txt
+  echo $i >> songs.txt
 done
 $EDITOR songs.txt
-ffmpeg -f concat -i songs.txt -c copy ../audio.mp3
+
+printf "continue? "
+read -r null
+
+time="0"
+rm $timestamp
+for i in $(cat songs.txt) 
+do
+  echo "$(date -d@$time -u +%H:%M:%S) $i" | sed -e "s/_/ /g" -e "s/\..*$//" >> $timestamp
+  duration=$(ffprobe -i $i -show_entries format=duration -v quiet -of csv="p=0" | sed -e 's/\..*$//')
+  time=$(expr $duration \+ $time)
+done
+
+rm sequence.txt
+for i in $(cat songs.txt)
+do
+  echo "file $i" >> sequence.txt
+done
+ffmpeg -f concat -i sequence.txt ../audio.mp4
 rm songs.txt
+rm sequence.txt
+
 cd ..
 
-duration=$(ffprobe -i audio.mp3 -show_entries format=duration -v quiet -of csv="p=0")
+# Generating Video Background
+duration=$(ffprobe -i audio.mp4 -show_entries format=duration -v quiet -of csv="p=0")
 count=$(echo "console.log(Math.ceil(Math.log10($duration)) - 1)" | node)
 
+vids_names="vids.txt"
 echo "file clip.mp4" > $vids_names 
 for i in $(seq 9)
 do
@@ -44,10 +55,10 @@ do
   ffmpeg -f concat -i vids.txt -c copy tmp.mp4
   mv tmp.mp4 clip.mp4
 done
-
 rm $vids_names
 
-ffmpeg -i clip.mp4 -i audio.mp3 -map 0:v -map 1:a -c copy -shortest final.mp4
+# Generating Final Video
+ffmpeg -i clip.mp4 -i audio.mp4 -map 0:v -map 1:a -c copy -shortest final.mp4
 
 rm clip.mp4
-rm audio.mp3
+rm audio.mp4
