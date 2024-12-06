@@ -26,14 +26,10 @@ do
   time=$(expr $duration \+ $time)
 done
 
-rm sequence.txt
-for i in $(cat songs.txt)
-do
-  echo "file $i" >> sequence.txt
-done
-ffmpeg -f concat -i sequence.txt ../audio.mp4
+concatvideo $(cat songs.txt)
+
+mv output.mp4 ../audio.mp4
 rm songs.txt
-rm sequence.txt
 
 cd ..
 
@@ -48,7 +44,7 @@ do
   echo "file clip.mp4" >> $vids_names
 done
 
-ffmpeg -loop 1 -i $2 -t 10 -pix_fmt yuv420p -vf scale=1080:1920 clip.mp4
+ffmpeg -loop 1 -i $2 -t 10 -pix_fmt yuv420p -vf scale=1920:1080 clip.mp4
 
 for i in $(seq $count)
 do
