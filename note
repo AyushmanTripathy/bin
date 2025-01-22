@@ -1,0 +1,6 @@
+#!/bin/sh
+
+FILE="/tmp/notes/$(uuidgen | cut -f2 -d-).7"
+mkdir -p /tmp/notes
+pandoc --standalone --to man "$1" -o "$FILE" || exit
+man "$FILE"
