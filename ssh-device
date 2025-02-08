@@ -7,12 +7,12 @@ name=$(echo $line | cut -d'|' -f1)
 ip=$(echo $line | cut -d'|' -f2)
 port=$(echo $line | cut -d'|' -f3)
 
-option=$(printf "1. plain ssh\n2. mount ~/$name using sshfs\n" | dmenu -p "Choose option: " -l 10 | cut -d'.' -f1)
+option=$(printf "1. plain ssh\n2. mount $name using sshfs\n" | dmenu -p "Choose option: " -l 10 | cut -d'.' -f1)
 if [ $option -eq "1" ]
 then
   ssh $ip -p $port
 else
   mkdir -p $HOME/$name
   location=$(echo $line | sed -e 's/.*|//g' -e 's/,/\n/g' | dmenu -p "Choose Location: " -l 10)
-  sshfs $ip:$location -p $port $HOME/$name
+  sshfs $ip:/storage -p $port $HOME/$name
 fi

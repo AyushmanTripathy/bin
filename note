@@ -1,6 +1,77 @@
 #!/bin/sh
 
-FILE="/tmp/notes/$(uuidgen | cut -f2 -d-).7"
-mkdir -p /tmp/notes
-pandoc --standalone --to man "$1" -o "$FILE" || exit
-man "$FILE"
+PAGER="less -c -~ -P %f"
+
+display_man_md() {
+  FILE="/tmp/notes/$(uuidgen | cut -f2 -d-).7"
+  mkdir -p /tmp/notes
+  pandoc  --shift-heading-level-by=-1 --standalone --to man "$1" -o /tmp/notes/tmp.7 || exit
+  
+  DIR=$(basename $(dirname "$(pwd)/$1"))
+  NAME=$(basename "$1" | sed -e "s/\.md//")
+  echo '.TH "" "' $DIR '" "" "" "' $NAME '"' > $FILE
+  sed -e "/\.TH/d" /tmp/notes/tmp.7 >> "$FILE"
+  man --pager="$PAGER" "$FILE" 
+}
+
+display_man_txt() {
+  $PAGER "$1"
+}
+
+display_man() {
+  case "$1" in
+    *.md) display_man_md "$1";;
+    *) display_man_txt "$1";;
+  esac
+}
+
+display() {
+  cd $(dirname "$1") || exit
+
+  LOC="/tmp/notes/$(uuidgen | cut -f2 -d-)"
+  mkdir -p "$LOC"
+  pandoc "$(basename $1)" --metadata title="$1" --extract-media "$LOC/media" --to html -s -o "$LOC/index.html" || exit
+  $BROWSER "$LOC/index.html"
+}
+
+search() {
+  cd "$HOME/notes" || exit
+  display "$(fzf --scheme=history)"
+}
+
+list() {
+  cd "$HOME/notes/"
+  tree *
+}
+
+
+add_image() {
+  cd "$HOME/notes" || exit
+
+  pic="$HOME/pics/screenshots/$(ls $HOME/pics/screenshots/ | sort -r | sed -n '2p')"
+  [ -z "$pic" ] && exit
+
+  tag=$(echo "" | dmenu -p "Enter description: ")
+  [ -z "$tag" ] && exit
+
+  file=$(find -type f | grep md | dmenu -p "Select Note: " -l 10)
+  [ -z "$file" ] && exit
+
+  name="$(uuidgen | cut -d '-' -f1).jpg"
+  cp "$pic" "media/$name" 
+  echo "$name|$file|$tag" >> media/record.txt
+
+  echo "![$tag](../media/$name)" | xclip -sel c
+}
+
+while getopts "s l m: i" flag
+do
+    case "${flag}" in
+        s) search && exit;;
+        l) list && exit;;
+        m) display_man "${OPTARG}" && exit;;
+        *) echo "unknown option" && exit;;
+    esac
+done
+
+display "$1"
