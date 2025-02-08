@@ -14,6 +14,10 @@ Here are some of the scripts,
 
 Makes jukebox videos, with timestamps etc.
 
+### note
+
+i write notes in md, it can view it in html, manage images file, view as man page. etc
+
 ### runtests
 
 Runs multiple testcases for me, dectects filetype and can handle `TLE`s. Comes
