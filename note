@@ -70,6 +70,7 @@ do
         s) search && exit;;
         l) list && exit;;
         m) display_man "${OPTARG}" && exit;;
+        i) add_image && exit;;
         *) echo "unknown option" && exit;;
     esac
 done
