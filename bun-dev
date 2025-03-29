@@ -1,0 +1,21 @@
+#!/bin/sh
+
+lookup="$XDG_DATA_HOME/bun_ports.txt"
+project_name=$(basename "$(pwd)")
+entry=$(grep "$lookup" -e "$project_name")
+port="8888"
+
+[ -f "$lookup" ] || echo "baseline|3000" >> "$lookup"
+
+if [ -z "$entry" ]
+then
+  # not present
+  last_port=$(tail -1 "$lookup" | cut -d '|' -f2)
+  port=$(( "$last_port" + 1 ))
+  echo "$project_name|$port" >> "$lookup"
+else
+  # present
+  port=$(echo "$entry" | cut -d '|' -f2)
+fi
+
+bun dev --port "$port"
