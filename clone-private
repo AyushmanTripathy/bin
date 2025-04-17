@@ -1,0 +1,5 @@
+#!/bin/sh
+
+TOKEN="$(cat ~/private/.pat/$GITHUB_USERNAME)"
+NEW_URL=$(echo $1 | sed -e "s/github/$TOKEN@github/")
+git clone $NEW_URL
