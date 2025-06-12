@@ -35,7 +35,7 @@ else
   echo "$SSID|$password" >> "$file"
 fi
 
-if nmcli device wifi connect "$SSID" password "$password"
+if echo "$password" | nmcli device wifi connect "$SSID" --ask
 then 
   notify-send "Connected with $SSID"
 else 

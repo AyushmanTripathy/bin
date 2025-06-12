@@ -1,11 +1,16 @@
 #!/bin/sh
 
-if [ $# -eq 0 ]
-then
-  username="$GITHUB_USERNAME"
-else
-  username="$1"
-fi
+username="$GITHUB_USERNAME"
+token="$GITHUB_USERNAME"
+
+while getopts "u: t:" flag
+do
+    case "${flag}" in
+        u) username="${OPTARG}";;
+        t) token="${OPTARG}";;
+        *) echo "unknown option";;
+    esac
+done
 
 git remote set-url origin \
-"https://pat:$(cat ~/private/.pat/$username)@github.com/$username/$(basename "$PWD").git"
+"https://$(cat ~/private/.pat/$token)@github.com/$username/$(basename "$PWD").git"

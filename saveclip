@@ -1,9 +1,11 @@
 #!/bin/sh
 
-clipsdir="/tmp/clipsdir"
+set -e
+
+clipsdir="$HOME/tmp/clipboard"
 
 if [ ! -d $clipsdir ]; then
-  mkdir $clipsdir
+  mkdir -p $clipsdir
   echo "0" > "$clipsdir/id"
 fi
 
@@ -11,7 +13,8 @@ saveClip() {
   expr "$(cat $clipsdir/id)" + 1 > "$clipsdir/id"
   unique_id=$(cat $clipsdir/id)
   time_id=$(date '+%H-%M-%S')
-  xclip -sel clipboard -o > "$clipsdir/$unique_id|  $time_id"
+  desc=$(echo "" | dmenu -p "Enter description: ")
+  xclip -sel clipboard -o > "$clipsdir/$unique_id. $desc | $time_id"
   notify-send "saved clipboard as $unique_id"
   exit
 }
@@ -24,5 +27,5 @@ do
 done
 
 
-line=$(ls $clipsdir | sed -e "/id/d" | sort -r | dmenu -p "Select: " -l 10)
+line="$(ls $clipsdir | sed -e "/id$/d" | sort -n -r | dmenu -p "Select: " -l 10)"
 cat "$clipsdir/$line" | xclip -selection clipboard
