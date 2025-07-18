@@ -7,6 +7,8 @@ bluetoothctl --timeout 2 scan on
 
 line=$(bluetoothctl devices | cut -b 8- | sed -e "s/ /|/" | (echo "turn off"; cat -) | dmenu -p "Choose Device: " -l 10)
 
+[ -z "$line" ] && exit 
+
 if [ "turn off" = "$line" ]
 then
   bluetoothctl power off && notify-send "Bluetooth powered off" || notify-send "power off failed"

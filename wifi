@@ -5,6 +5,8 @@ file="$HOME/private/wifi_passwords.txt"
 notify-send "Scanning for networks"
 SSID=$(nmcli -f SSID device wifi list --rescan yes | sed -n '1!p' | (cat -; printf "disconnect\npower on\n") | dmenu -p "Select Wifi: " -l 10 | sed 's/\s*$//')
 
+[ -z "$SSID" ] && exit
+
 if [ "$SSID" = "disconnect" ]; then
   if nmcli device down wlo1
   then 

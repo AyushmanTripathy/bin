@@ -1,0 +1,5 @@
+#!/bin/sh
+
+tmp="/tmp/out.csv"
+xlsx2csv "$1" > $tmp
+csvlens $tmp
