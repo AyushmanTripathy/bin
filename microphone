@@ -1,0 +1,90 @@
+#!/bin/sh
+
+MUTED_CACHE_FILE="/tmp/microphone-muted"
+
+update_dwmblocks() {
+  pkill -RTMIN+12 dwmblocks
+}
+
+toggle_all(){
+  check_if_mute_all
+
+  for SOURCE_ID in $(pulsemixer --list-sources | grep -e "Source:" | sed -e 's/.*ID://' -e 's/,.*//')
+  do
+    if [ $MICROPHONE_MUTED -eq 0 ]
+    then
+      pulsemixer --id $SOURCE_ID --mute
+    else
+      pulsemixer --id $SOURCE_ID --unmute
+    fi
+  done
+
+  # flip muted status
+  if [ $MICROPHONE_MUTED -eq 0 ]
+  then
+    export MICROPHONE_MUTED=1
+  else
+    export MICROPHONE_MUTED=0
+  fi
+
+  printf $MICROPHONE_MUTED > $MUTED_CACHE_FILE
+  update_dwmblocks
+  noftify_mute_status
+}
+
+check_if_mute_all(){
+  if [ -f $MUTED_CACHE_FILE ]
+  then
+    export MICROPHONE_MUTED="$(cat $MUTED_CACHE_FILE)"
+    return
+  fi
+
+  for SOURCE_ID in $(pulsemixer --list-sources | grep -e "Source:" | sed -e 's/.*ID://' -e 's/,.*//')
+  do
+    # echo $SOURCE_ID
+    # pulsemixer --id $SOURCE_ID --get-mute
+    if [ "$(pulsemixer --id $SOURCE_ID --get-mute)" -eq "0" ] 
+    then
+      export MICROPHONE_MUTED=0
+      printf $MICROPHONE_MUTED > $MUTED_CACHE_FILE
+      return
+    fi
+  done
+  export MICROPHONE_MUTED=1
+  printf $MICROPHONE_MUTED > $MUTED_CACHE_FILE
+  update_dwmblocks
+}
+
+noftify_mute_status() {
+  if [ $MICROPHONE_MUTED -eq 0 ]
+  then
+    notify-send -t 2000 "Unmuted 🔴"
+  else
+    notify-send -t 2000 "Muted"
+  fi
+}
+
+print_mute_status() {
+  check_if_mute_all
+
+  if [ $MICROPHONE_MUTED -eq 0 ]
+  then
+    echo "🔴"
+  else
+    echo "M"
+  fi
+}
+
+reset_mute_cache() {
+  rm $MUTED_CACHE_FILE
+  check_if_mute_all
+}
+
+while getopts "r t g" flag
+do
+    case "${flag}" in
+        t) toggle_all;;
+        g) print_mute_status;;
+        r) reset_mute_cache;;
+    esac
+done
