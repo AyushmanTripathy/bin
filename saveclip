@@ -2,7 +2,7 @@
 
 set -e
 
-clipsdir="$HOME/tmp/clipboard"
+clipsdir="$HOME/private/clipboard"
 
 if [ ! -d $clipsdir ]; then
   mkdir -p $clipsdir
