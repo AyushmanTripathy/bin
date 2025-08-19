@@ -1,15 +1,48 @@
 #!/bin/sh
 
+
+FILE="$XDG_DATA_HOME/volume_levels.txt"
+TMP_FILE="/tmp/volumetmp"
+
 update() {
   pkill -RTMIN+10 dwmblocks
 }
 
-while getopts "m i d g" flag
+switch_volume_prompt() {
+  [ -f "$FILE" ] || touch $FILE 
+
+  line="$(cat $FILE | dmenu -p "Volume level: " -l 10)"
+  volume=$(echo "$line" | sed -e 's/|.*$//')
+
+  pulsemixer --max-volume 100 --set-volume $volume
+
+  update
+}
+
+switch_volume_toggle() {
+  [ -f "$FILE" ] || touch $FILE 
+
+  volume=$(cat "$FILE" | head -1 | sed -e 's/|.*$//')
+  echo $volume
+
+  pulsemixer --max-volume 100 --set-volume $volume
+
+  cat $FILE | head -2 | tail -1 > $TMP_FILE
+  cat $FILE | head -1 >> $TMP_FILE
+  cat $FILE | sed -e '1,2d' >> $TMP_FILE
+  cat $TMP_FILE > $FILE
+
+  update
+}
+
+while getopts "m i s t d g" flag
 do
     case "${flag}" in
         i) pulsemixer --max-volume 100 --change-volume +5 && update;;
         d) pulsemixer --max-volume 100 --change-volume -5 && update;;
         m) pulsemixer --toggle-mute && update;;
+        s) switch_volume_prompt;;
+        t) switch_volume_toggle;;
         g) echo "V-$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | cut -d. -f2)";;
     esac
 done

@@ -27,13 +27,13 @@ echo $(cat $wifi_tmp_file | grep -e "wifi" | sed -e "s/--//g" -e "s/disconnected
 echo $(cat $wifi_tmp_file | grep -e "ethernet" | sed -e "s/--//g") >> $tmp_file
 
 # mocp song
-mocp_command="mocp -M $XDG_CONFIG_HOME/moc"
-song_name=$($mocp_command -Q "%file")
-if [ ! -z "$song_name" ]
-then
-  printf "\ncurrenting playing: $($mocp_command -Q '(%ct/%tt)')\n" >> $tmp_file
-  basename $song_name | sed -e "s/_/ /g" >> $tmp_file
-fi
+# mocp_command="mocp -M $XDG_CONFIG_HOME/moc"
+# song_name=$($mocp_command -Q "%file")
+# if [ ! -z "$song_name" ]
+# then
+#   printf "\ncurrenting playing: $($mocp_command -Q '(%ct/%tt)')\n" >> $tmp_file
+#   basename $song_name | sed -e "s/_/ /g" >> $tmp_file
+# fi
 
 notify-send "$(cat $tmp_file)"
 rm $wifi_tmp_file
