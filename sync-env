@@ -1,0 +1,32 @@
+#!/bin/sh
+
+BACKUP="$HOME/private/envs"
+
+if [ -d $BACKUP ]
+then
+  echo 'Using backup'
+else
+  echo "Initing new backup"
+  mkdir -p "$BACKUP"
+  cd $BACKUP
+  git init
+fi
+
+sync_env() {
+  echo "[ENV BACKUP] $i"
+  cp "$i/.env" "$BACKUP/$i"
+}
+
+sync_env_all() {
+  cd "$HOME/projects"
+  for i in *
+  do
+    [ -f "$i/.env" ] && sync_env $i
+  done
+
+  cd $BACKUP
+  git add .
+  git commit -m "$(date)"
+}
+
+sync_env_all
