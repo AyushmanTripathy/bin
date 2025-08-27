@@ -1,82 +1,16 @@
 #!/bin/sh
 
-db_location="$XDG_DATA_HOME/diary"
-tmp="/tmp/diary_entry.txt"
-month=$(date "+%m")
-day=$(date "+%d")
-year=$(date "+%g")
+ENCRYPTED="$HOME/private/diary.md.asc"
+DECRYPTED="/tmp/diary.md"
 
-check_if_updated() {
-  if [ -f "$1" ] 
-  then
-    notify-send "Don't forget to make diary entry"
-  else
-    echo "Diary Entry already made!"
-  fi
-}
+gpg --output $DECRYPTED --decrypt $ENCRYPTED
+$EDITOR $DECRYPTED
 
-ask_dmenu() {
-  printf "$1: " >> "$4"
-  printf "$3" | dmenu -p "$2" -l 10 >> "$4"
-}
+printf "save>  "
+read n
 
-ask() {
-  printf "$1: " >> "$4"
-  printf "$2"
-  read input
-  printf "$input\n" >> "$4"
-}
+rm $ENCRYPTED
+gpg --output $ENCRYPTED --encrypt --sign --armour -r ayushmantripathy2004@gmail.com $DECRYPTED
 
-push_to_git() {
-  cd $1
-  git add .
-  git commit -m "$day/$month/$year"
-  update-remote
-  git push origin master
-}
-
-confirm_dmenu() {
-  input=$(printf "no\nyes" | dmenu -p "Confirm Entry" -l 2)
-  if [ "yes" = "$input" ] 
-  then
-    mv $tmp $1
-    push_to_git $2
-  else
-    rm $tmp
-  fi
-}
-
-cleanup() {
-  rm $tmp
-}
-
-add_diary_entry() {
-  if [ -f "$1" ]
-  then
-      notify-send "Diary entry already made!"
-      return
-  fi
-
-  date '+%b %d %G (%a) %I:%M%p' > $tmp
-  ask_dmenu "Level" "How productive was your day? " "high\nmedium\nlow" $tmp
-  ask_dmenu "Exercise" "Did you exercise? " "no\nfull\nlittle bit" $tmp
-  ask_dmenu "Leanred" "What you learn today? " '' $tmp
-  ask_dmenu "Descrition" "Any thoughts? " '' $tmp
- 
-  trap cleanup EXIT
-  confirm_dmenu
-  cp $tmp $1
-  push_to_git $2
-}
-
-month_location="$db_location/$year/$month"
-[ -f "$month_location" ] || mkdir -p $month_location
-exact_location="$month_location/$day"
-
-while getopts "a c" flag
-do
-    case "${flag}" in
-        c) check_if_updated $exact_location;;
-        a) add_diary_entry $exact_location $db_location;;
-    esac
-done
+shred $DECRYPTED
+rm $DECRYPTED
