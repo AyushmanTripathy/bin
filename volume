@@ -43,7 +43,7 @@ do
         m) pulsemixer --toggle-mute && update;;
         s) switch_volume_prompt;;
         t) switch_volume_toggle;;
-        g) echo "V-$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | cut -d. -f2)";;
+        g) echo "V-$(pulsemixer --get-volume | awk '{ print $1 }')%";;
     esac
 done
 

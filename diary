@@ -1,8 +1,10 @@
 #!/bin/sh
 
 ENCRYPTED="$HOME/private/diary.md.asc"
+ENCRYPTED_COPY="/tmp/diary.copy.md.asc"
 DECRYPTED="/tmp/diary.md"
 
+cp $ENCRYPTED $ENCRYPTED_COPY
 gpg --output $DECRYPTED --decrypt $ENCRYPTED
 $EDITOR $DECRYPTED
 

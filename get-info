@@ -23,8 +23,9 @@ printf "\n" >> $tmp_file
 
 # wifi
 nmcli device | cut -b9- > $wifi_tmp_file
-echo $(cat $wifi_tmp_file | grep -e "wifi" | sed -e "s/--//g" -e "s/disconnected/🚫/" -e "s/connected/✔ /") >> $tmp_file
-echo $(cat $wifi_tmp_file | grep -e "ethernet" | sed -e "s/--//g") >> $tmp_file
+echo $(cat $wifi_tmp_file | grep -e "wifi" | sed -e "s/--//g" -e "s/unavaliable/🔴/" -e "s/disconnected/🚫/" -e "s/connected/✔ /" | head -1) >> $tmp_file
+echo $(cat $wifi_tmp_file | grep -e "ethernet" | sed -e "s/--//g" -e "s/unavailable/🔴/" -e "s/disconnected/🚫/" -e "s/connected/✔ /") >> $tmp_file
+
 
 # mocp song
 # mocp_command="mocp -M $XDG_CONFIG_HOME/moc"

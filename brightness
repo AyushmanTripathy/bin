@@ -1,6 +1,14 @@
 #!/bin/sh
 
 backlight_location="/sys/class/backlight/intel_backlight"
+EPSILON=100
+
+if [ "$IS_THINKPAD" = "1" ]
+then
+  backlight_location="/sys/class/backlight/amdgpu_bl1"
+  EPSILON=1000
+fi
+
 brightness_file="$backlight_location/brightness"
 max_brightness="$(cat "$backlight_location/max_brightness")"
 b=$(cat $brightness_file)
@@ -10,7 +18,7 @@ get() {
 }
 
 increment(){
-  b=$(expr $1 + $b)
+  b=$(expr $EPSILON \* $1 \+ $b)
   if [ $b -gt $max_brightness ]
   then
     notify-send "Max brightness"
@@ -28,7 +36,7 @@ decrement(){
     exit 1
   fi
 
-  b=$(expr $b - $1)
+  b=$(expr $b \- $1 \* $EPSILON)
   if [ $b -lt 0 ]
   then
     echo '0' > $brightness_file
