@@ -1,3 +1,8 @@
 #!/bin/sh
 
-sensors | awk '/Core 0/ {print $3}'
+if [ "$IS_THINKPAD" = "1" ]
+then
+  sensors | awk '/CPU/ {print $2}'
+else
+  sensors | awk '/Core 0/ {print $3}'
+fi
