@@ -12,7 +12,7 @@ for battery in /sys/class/power_supply/BAT?*; do
 	case "$(cat "$battery/status" 2>&1)" in
 		"Full") status="🔋" ;;
 		"Discharging") status="";
-     [ "$capacity" -le 25 ] && notify-send "Battery Low!" "Battery capacity only $capacity% remaining";;
+     [ "$capacity" -le 20 ] && notify-send "Battery Low!" "Battery capacity only $capacity% remaining";;
 		"Charging") status="⚡";
       [ "$capacity" -eq 99 ] && notify-send "Battery Full!";;
 		"Not charging") status="🚫" ;;

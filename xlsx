@@ -1,5 +1,12 @@
 #!/bin/sh
 
+sheet_no=1
+if [ -n "$2" ]
+then
+  sheet_no="$2"
+fi
+echo "displaying sheet no $sheet_no"
+
 tmp="/tmp/out.csv"
-xlsx2csv "$1" > $tmp
+xlsx2csv -s $sheet_no "$1" > $tmp
 csvlens $tmp

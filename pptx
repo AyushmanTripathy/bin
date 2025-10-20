@@ -1,0 +1,5 @@
+#!/bin/sh
+
+LOC="/tmp/$(uuidgen | cut -f2 -d-).pdf"
+unoconv -f pdf -o "$LOC" "$1"
+xdg-open $LOC

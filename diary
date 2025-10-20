@@ -14,5 +14,7 @@ read n
 rm $ENCRYPTED
 gpg --output $ENCRYPTED --encrypt --sign --armour -r ayushmantripathy2004@gmail.com $DECRYPTED
 
+[ ! -f $ENCRYPTED ] && cp $ENCRYPTED_COPY $ENCRYPTED
+
 shred $DECRYPTED
 rm $DECRYPTED
