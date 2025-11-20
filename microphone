@@ -1,9 +1,19 @@
 #!/bin/sh
 
+LED_BRIGHTNESS="/sys/class/leds/platform::micmute/brightness"
 MUTED_CACHE_FILE="/tmp/microphone-muted"
 
-update_dwmblocks() {
+update_display() {
   pkill -RTMIN+12 dwmblocks
+  if [ -f "$LED_BRIGHTNESS" ]
+  then
+    if [ $MICROPHONE_MUTED -eq 0 ]
+    then
+      echo 1 > $LED_BRIGHTNESS
+    else
+      echo 0 > $LED_BRIGHTNESS
+    fi
+  fi
 }
 
 toggle_all(){
@@ -28,7 +38,7 @@ toggle_all(){
   fi
 
   printf $MICROPHONE_MUTED > $MUTED_CACHE_FILE
-  update_dwmblocks
+  update_display 
   noftify_mute_status
 }
 
@@ -52,7 +62,7 @@ check_if_mute_all(){
   done
   export MICROPHONE_MUTED=1
   printf $MICROPHONE_MUTED > $MUTED_CACHE_FILE
-  update_dwmblocks
+  update_display 
 }
 
 noftify_mute_status() {
