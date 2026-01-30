@@ -1,0 +1,46 @@
+#!/bin/sh
+
+set -euo pipefail
+
+PHONE="/media/phone"
+LOC="$PHONE/Internal shared storage/Music/music"
+
+printf "Android Auto turned on [y/n]> "
+read ans
+
+if [ "$ans" != "y" ]
+then
+  exit
+fi
+
+if [ ! -d "$PHONE" ]
+then
+  echo "$PHONE not found"
+  exit
+fi
+
+jmtpfs $PHONE
+
+cd "$LOC" || exit
+
+cat "$MUSICDB"/*.txt | sort > /tmp/1.txt
+cat *.txt | sort > /tmp/2.txt
+
+for i in $(comm -23 /tmp/1.txt /tmp/2.txt)
+do
+  echo "Syncing $i"
+  cp "$MUSICDB/$i" "$i"
+done
+
+echo "Syncing txt files"
+for i in $(ls $MUSICDB/*.txt)
+do
+  cp "$i" "$(basename $i)"
+done
+
+echo "Dismounting"
+
+cd /media
+fusermount -u "$PHONE"
+
+echo "Done"
