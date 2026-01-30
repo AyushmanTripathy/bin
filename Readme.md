@@ -18,6 +18,11 @@ Makes jukebox videos, with timestamps etc.
 
 i write notes in md, it can view it in html, manage images file, view as man page. etc
 
+### sync-music-phone
+
+I dont stream music,
+This helps me sync my mp3 files between my laptop & my phone
+
 ### runtests
 
 Runs multiple testcases for me, dectects filetype and can handle `TLE`s. Comes
