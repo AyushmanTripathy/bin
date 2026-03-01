@@ -76,6 +76,14 @@ helps me revisor my [notes](https://github.com/ayushmantripathy/notes)
 for taking full or cropped screenshots and screen recordings. uses `slop` and
 `scrot`
 
+### run
+
+Run programs with live reload using nodemon
+
+### cmds
+
+So i don't have to rewrite a few long commands
+
 ### autocommiter
 
 This is script adds 5 commits every day to my github to keep the stats green.
