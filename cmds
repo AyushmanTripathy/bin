@@ -1,0 +1,23 @@
+#!/bin/sh
+set -euo pipefail
+
+error() {
+  echo "[ERROR] $1"
+  exit 1
+}
+
+lookup="$XDG_DATA_HOME/cmds.txt"
+[ -f "$lookup" ] || error "cmds.txt not found"
+
+entry=$(cat "$lookup" | fzf)
+
+[ -z "$entry" ] && error "No command selected"
+
+label=$(echo "$entry" | sed -e 's/:.*//')
+cmd=$(echo "$entry" | sed -e 's/[^:]*://')
+echo "label: $label"
+echo "cmd: $cmd"
+printf "confirm> "
+read n
+
+sh -c "$cmd"
