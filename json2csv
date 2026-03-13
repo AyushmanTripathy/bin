@@ -1,0 +1,3 @@
+#!/bin/sh
+
+jq -r ' (.[0] | keys_unsorted) as $keys | ($keys | @csv), (.[] | [.[$keys[]]] | @csv) '
