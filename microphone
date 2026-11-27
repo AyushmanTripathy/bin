@@ -5,6 +5,8 @@ MUTED_CACHE_FILE="/tmp/microphone-muted"
 
 update_display() {
   pkill -RTMIN+12 dwmblocks
+  polybar-msg action "#microphone.reset"
+
   if [ -f "$LED_BRIGHTNESS" ]
   then
     if [ $MICROPHONE_MUTED -eq 0 ]
